@@ -14,7 +14,6 @@
 #' @param doi Character: data DOI on the NASA DAAC server, it can be obtained 
 #' directly from the NASA ORNL DAAC data portal (e.g., GEDI L4A through 
 #' https://daac.ornl.gov/cgi-bin/dsviewer.pl?ds_id=2056).
-#' @param netrc_file Character: path to the credential file, default is NULL.
 #' @param just_path Boolean: if we just want the metadata and URL or proceed the actual download.
 #'
 #' @return A list containing meta data and physical path for each data downloaded.
@@ -50,19 +49,14 @@ NASA_DAAC_download <- function(ul_lat,
                                to,
                                outdir = getwd(),
                                doi,
-                               netrc_file = NULL,
                                just_path = FALSE) {
-  # if there is no credential file in the outdir.
-  # we will create a new one.
-  # this function is located within the GEDI_AGB_prep script.
+  # Determine if we have enough inputs.
   if (is.null(outdir) & !just_path) {
     PEcAn.logger::logger.info("Please provide outdir if you want to download the file.")
     return(0)
-  } else if (!is.null(outdir) & !just_path & is.null(netrc_file)) {
-    if (length(list.files(outdir, pattern = "netrc")) == 0) {
-      netrc_file <- getnetrc(outdir)
-    }
   }
+  # setup DAAC Credentials.
+  DAAC_Set_Credential()
   # setup arguments for URL.
   daterange <- c(from, to)
   # grab provider and concept id from CMR based on DOI.
@@ -92,6 +86,12 @@ NASA_DAAC_download <- function(ul_lat,
     granules_href <- c(granules_href, sapply(granules, function(x) x$links[[1]]$href))
     page <- page + 1
   }
+  # detect existing files.
+  same.file.inds <- which(basename(granules_href) %in% list.files(outdir))
+  if (length(same.file.inds) > 0) {
+    granules_href <- granules_href[-same.file.inds]
+  }
+  
   # if we need to download the data.
   if (length(granules_href) == 0) {
     return(NA)
@@ -99,24 +99,56 @@ NASA_DAAC_download <- function(ul_lat,
   if (!just_path) {
     # printing out parallel environment.
     message("using ", ncore, " core")
+    message("start downloading ", length(granules_href), " files.")
     # download
     # if we have (or assign) more than one core to be allocated.
     if (ncore > 1) {
       # setup the foreach parallel computation.
       cl <- parallel::makeCluster(ncore)
       doParallel::registerDoParallel(cl)
-      message("start download")
+      # record progress.
+      doSNOW::registerDoSNOW(cl)
+      pb <- utils::txtProgressBar(min=1, max=length(granules_href), style=3)
+      progress <- function(n) utils::setTxtProgressBar(pb, n)
+      opts <- list(progress=progress)
       foreach::foreach(
         i = 1:length(granules_href),
-        .packages = "httr"
+        .packages=c("httr","Kendall"),
+        .options.snow=opts
       ) %dopar% {
         response <-
           httr::GET(
             granules_href[i],
             httr::write_disk(file.path(outdir, basename(granules_href)[i]), overwrite = T),
-            httr::config(netrc = TRUE, netrc_file = netrc_file),
-            httr::set_cookies("LC" = "cookies")
+            httr::authenticate(user = Sys.getenv("ed_un"),
+                               password = Sys.getenv("ed_pw"))
           )
+        # Check if we can successfully open the downloaded file.
+        # if it's H5 file.
+        if (grepl(pattern = ".h5", x = basename(granules_href)[i], fixed = T)) {
+          while ("try-error" %in% class(try(hdf5r::H5File$new(file.path(outdir, basename(granules_href)[i]), mode = "r"), silent = T))) {
+            response <-
+              httr::GET(
+                granules_href[i],
+                httr::write_disk(file.path(outdir, basename(granules_href)[i]), overwrite = T),
+                httr::authenticate(user = Sys.getenv("ed_un"),
+                                   password = Sys.getenv("ed_pw"))
+              )
+          }
+          # if it's HDF4 or regular GeoTIFF file.
+        } else if (grepl(pattern = ".tif", x = basename(granules_href)[i], fixed = T) |
+                   grepl(pattern = ".tiff", x = basename(granules_href)[i], fixed = T) |
+                   grepl(pattern = ".hdf", x = basename(granules_href)[i], fixed = T)) {
+          while ("try-error" %in% class(try(terra::rast(file.path(outdir, basename(granules_href)[i])), silent = T))) {
+            response <-
+              httr::GET(
+                granules_href[i],
+                httr::write_disk(file.path(outdir, basename(granules_href)[i]), overwrite = T),
+                httr::authenticate(user = Sys.getenv("ed_un"),
+                                   password = Sys.getenv("ed_pw"))
+              )
+          }
+        }
       }
       parallel::stopCluster(cl)
       foreach::registerDoSEQ()
@@ -128,8 +160,8 @@ NASA_DAAC_download <- function(ul_lat,
           httr::GET(
             granules_href[i],
             httr::write_disk(file.path(outdir, basename(granules_href)[i]), overwrite = T),
-            httr::config(netrc = TRUE, netrc_file = netrc_file),
-            httr::set_cookies("LC" = "cookies")
+            httr::authenticate(user = Sys.getenv("ed_un"),
+                               password = Sys.getenv("ed_pw"))
           )
       }
     }
@@ -209,4 +241,24 @@ NASA_CMR_finder <- function(doi) {
   concept_id <- results$feed$entry %>% purrr::map("id") %>% unlist
   # return results.
   return(as.list(data.frame(cbind(provider, concept_id))))
+}
+
+#' Set NASA DAAC credentials to the current environment.
+#'
+#' @param replace Boolean: determine if we want to replace the current 
+#' credentials from the environment. 
+#'
+#' @author Dongchen Zhang
+DAAC_Set_Credential <- function(replace = FALSE) {
+  if (replace) {
+    PEcAn.logger::logger.info("Replace previous stored NASA DAAC credentials.")
+  }
+  if (replace | nchar(Sys.getenv("ed_un")) == 0 | nchar(Sys.getenv("ed_un")) == 0) {
+    Sys.setenv(ed_un = sprintf(
+      getPass::getPass(msg = "Enter NASA Earthdata Login Username \n (or create an account at urs.earthdata.nasa.gov) :")
+    ), 
+    ed_pw = sprintf(
+      getPass::getPass(msg = "Enter NASA Earthdata Login Password:")
+    ))
+  }
 }

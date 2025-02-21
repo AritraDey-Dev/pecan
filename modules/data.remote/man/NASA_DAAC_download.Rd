@@ -14,7 +14,6 @@ NASA_DAAC_download(
   to,
   outdir = getwd(),
   doi,
-  netrc_file = NULL,
   just_path = FALSE
 )
 }
@@ -41,8 +40,6 @@ downloaded files. Default is the current work directory(getwd()).}
 \item{doi}{Character: data DOI on the NASA DAAC server, it can be obtained 
 directly from the NASA ORNL DAAC data portal (e.g., GEDI L4A through 
 https://daac.ornl.gov/cgi-bin/dsviewer.pl?ds_id=2056).}
-
-\item{netrc_file}{Character: path to the credential file, default is NULL.}
 
 \item{just_path}{Boolean: if we just want the metadata and URL or proceed the actual download.}
 }
