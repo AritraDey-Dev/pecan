@@ -264,7 +264,7 @@ Prep.MODIS.CSV.from.DAAC <- function(site_info, extent, from, to, download.outdi
   }
   # create data frame of extents for MODIS tiles.
   # record progress.
-  message("\nCreating information table for downloaded MODIS tiles.")
+  PEcAn.logger::logger.info("\nCreating information table for downloaded MODIS tiles.")
   doSNOW::registerDoSNOW(cl)
   pb <- utils::txtProgressBar(min=1, max=length(modis.out), style=3)
   progress <- function(n) utils::setTxtProgressBar(pb, n)
@@ -282,7 +282,7 @@ Prep.MODIS.CSV.from.DAAC <- function(site_info, extent, from, to, download.outdi
   unique.dates <- unique.dates[which(as.Date(unique.dates) >= from &
                                        as.Date(unique.dates) <= to)]
   # find inds of file paths that match each point.
-  message("\nFinding indexes of file paths that match each point.")
+  PEcAn.logger::logger.info("\nFinding indexes of file paths that match each point.")
   pb <- utils::txtProgressBar(min=1, max=length(pts), style=3)
   progress <- function(n) utils::setTxtProgressBar(pb, n)
   opts <- list(progress=progress)
@@ -303,7 +303,7 @@ Prep.MODIS.CSV.from.DAAC <- function(site_info, extent, from, to, download.outdi
   } %>% unlist
   # extract MODIS products.
   # loop over tiles.
-  message("\nExtracting MODIS datasets by points.")
+  PEcAn.logger::logger.info("\nExtracting MODIS datasets by points.")
   unique.tile.ids <- sort(unique(tile.ids)) 
   pb <- utils::txtProgressBar(min=1, max=length(unique.tile.ids), style=3)
   progress <- function(n) utils::setTxtProgressBar(pb, n)
