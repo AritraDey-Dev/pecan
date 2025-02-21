@@ -2,22 +2,42 @@
 #' This function helps to download the yearly ERA5 data based on the prescribed features using the CDS API.
 #' @title ERA5_cds_annual_download
 #' 
-#' @param years Numeric: a series of years to be downloaded (e.g., 2012:2021).
-#' @param months List: a list contains months to be downloaded (e.g., list("01", "02") to download files in Jan and Feb).
-#' @param days List: a list contains days to be downloaded (e.g., list("01", "02") to download files in the first and second days).
-#' @param times List: a list contains times to be downloaded (e.g., list('00:00','03:00') to download files for the times 12:00 and 3:00 am UTC).
-#' @param area Character: a string contains the bounding box (formatted as "North/West/South/East") to be downloaded (e.g., "85/-179/7/-20").
-#' @param variables List: a list contains variables to be downloaded (e.g., list("2m_temperature","surface_pressure")).
-#' @param outdir Character: physical path where the ERA5 data are stored.
+#' @param outfolder Character: physical path where the ERA5 data are stored.
+#' @param start_date character: the start date of the data to be downloaded. Format is YYYY-MM-DD (will only use the year part of the date)
+#' @param end_date character: the end date of the data to be downloaded. Format is YYYY-MM-DD (will only use the year part of the date)
+#' @param extent numeric: a vector of numbers contains the bounding box (formatted as xmin, xmax, ymin, ymax) to be downloaded.
+#' @param variables character: a vector contains variables to be downloaded (e.g., c("2m_temperature","surface_pressure")).
 #' @param auto.create.key Boolean: decide if we want to generate the CDS RC file if it doesn't exist, the default is TRUE.
+#' @param timeout numeric: the maximum time (in seconds) allowed to download the data. The default is 36000 seconds.
 #'
 #' @return A vector containing file paths to the downloaded files.
 #' @export
 #' 
-#' @examples
+#' @importFrom magrittr %>%
 #' @author Dongchen Zhang
-ERA5_cds_annual_download <- function(years, months, days, times, area, variables, outdir, auto.create.key = T) {
-  options(timeout=360000)
+download.ERA5_cds_annual <- function(outfolder, start_date, end_date, extent, variables, auto.create.key = T, timeout = 36000) {
+  # check shell environments.
+  if ("try-error" %in% class(try(system("grib_to_netcdf"), silent = T))) {
+    PEcAn.logger::logger.info("The grib_to_netcdf function is not detected in shell command.")
+    return(NA)
+  }
+  if ("try-error" %in% class(try(system("ncks"), silent = T))) {
+    PEcAn.logger::logger.info("The ncks function is not detected in shell command.")
+    return(NA)
+  }
+  # setup timeout for download.
+  options(timeout=timeout)
+  # convert arguments to CDS API specific arguments.
+  years <- sort(unique(lubridate::year(seq(lubridate::date(start_date), lubridate::date(end_date), "1 year"))))
+  months <- sort(unique(lubridate::month(seq(lubridate::date(start_date), lubridate::date(end_date), "1 month")))) %>% 
+    purrr::map(function(d)sprintf("%02d", d))
+  days <- sort(unique(lubridate::day(seq(lubridate::date(start_date), lubridate::date(end_date), "1 day")))) %>% 
+    purrr::map(function(d)sprintf("%02d", d))
+  times  <- list('00:00','03:00','06:00',
+                 '09:00','12:00','15:00',
+                 '18:00','21:00')
+  area <- paste(c(extent[4], extent[1], extent[3], extent[2]), collapse = "/")
+  variables <- as.list(variables)
   #load cdsapi from python environment.
   tryCatch({
     cdsapi <- reticulate::import("cdsapi")
@@ -59,7 +79,12 @@ ERA5_cds_annual_download <- function(years, months, days, times, area, variables
   }
   #check if the token exists for the cdsapi.
   if (!file.exists(file.path(Sys.getenv("HOME"), ".cdsapirc")) & auto.create.key) {
-    getnetrc(Sys.getenv("HOME"))
+    if (!require(getPass)) {
+      PEcAn.logger::logger.info("The getPass pacakge is not installed for creating the API key.")
+      return(NA)
+    } else {
+      getnetrc(Sys.getenv("HOME"))
+    }
   } else if (!file.exists(file.path(Sys.getenv("HOME"), ".cdsapirc")) & !auto.create.key) {
     PEcAn.logger::logger.severe(
       "Please create a `${HOME}/.cdsapirc` file as described here:",
@@ -78,7 +103,7 @@ ERA5_cds_annual_download <- function(years, months, days, times, area, variables
   # loop over years.
   nc.paths <- c()
   for (y in years) {
-    fname <- file.path(outdir, paste0("ERA5_", y, ".grib"))
+    fname <- file.path(outfolder, paste0("ERA5_", y, ".grib"))
     # start retrieving data.
     # you need to have an account for downloaing the files
     # Read the documantion for how to setup your account and settings before trying this
@@ -138,5 +163,15 @@ ERA5_cds_annual_download <- function(years, months, days, times, area, variables
     # remove previous grib file.
     unlink(fname)
   }
-  return(nc.paths)
+  # construct results to meet the requirements of pecan.met workflow.
+  results <- vector("list", length = length(years))
+  for (i in seq_along(results)) {
+    results[[i]] <- list(file = nc.paths[i],
+                         host = PEcAn.remote::fqdn(),
+                         startdate = paste0(paste(years[i], months[1], days[1], sep = "-"), " ", times[1], ":00"),
+                         enddate = paste0(paste(years[i], months[length(months)], days[length(days)], sep = "-"), " ", times[length(times)], ":00"),
+                         mimetype = "application/x-netcdf",
+                         formatname = "ERA5_year.nc")
+  }
+  return(results)
 }
