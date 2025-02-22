@@ -15,7 +15,7 @@
 #' 
 #' @importFrom magrittr %>%
 #' @author Dongchen Zhang
-download.ERA5_cds_annual <- function(outfolder, start_date, end_date, extent, variables, auto.create.key = T, timeout = 36000) {
+download.ERA5_cds <- function(outfolder, start_date, end_date, extent, variables, auto.create.key = T, timeout = 36000) {
   # check shell environments.
   if ("try-error" %in% class(try(system("grib_to_netcdf"), silent = T))) {
     PEcAn.logger::logger.info("The grib_to_netcdf function is not detected in shell command.")
