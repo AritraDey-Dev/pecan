@@ -113,6 +113,7 @@ services:
   # ----------------------------------------------------------------------
   rstudio:
     hostname: rstudio
+    platform: linux/amd64
     image: pecan/base:${PECAN_VERSION:-latest}
     command: /work/rstudio.sh
     restart: unless-stopped
@@ -327,6 +328,7 @@ services:
   # PEcAn MAESPA model runner
   maespa:
     hostname: maespa-git
+    platform: linux/amd64
     user: "${UID:-1001}:${GID:-1001}"
     image: pecan/model-maespa-git:${PECAN_VERSION:-latest}
     restart: unless-stopped
@@ -363,6 +365,7 @@ services:
   # PEcAn DB Sync visualization
   dbsync:
     hostname: dbsync
+    platform: linux/amd64
     image: pecan/shiny-dbsync:${PECAN_VERSION:-latest}
     restart: unless-stopped
     networks:
@@ -386,6 +389,7 @@ services:
   # ----------------------------------------------------------------------
   api:
     hostname: api
+    platform: linux/amd64
     user: "${UID:-1001}:${GID:-1001}"
     image: pecan/api:${PECAN_VERSION:-latest}
     restart: unless-stopped
