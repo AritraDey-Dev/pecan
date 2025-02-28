@@ -5,16 +5,21 @@
 #' @param outdir character: where the final CSV file will be stored.
 #' @param search_window numeric: search window for locate available LAI values.
 #' @param export_csv boolean: decide if we want to export the CSV file.
-#' @param sd_threshold numeric: for filtering out any estimations with unrealistic high standard error, default is 20. The QC check will be skipped if it's set as NULL.
+#' @param sd_threshold numeric or character: for filtering out any estimations with unrealistic high standard error, default is 20. The QC check will be skipped if it's set as NULL.
 #' @param skip.download boolean: determine if we want to use existing LAI.csv file and skip the MODIS LAI download part.
+#' @param boundary numeric vector or list: the upper and lower quantiles for filtering out noisy LAI values (e.g., c(0.05, 0.95) or list(0.05, 0.95)). The default is NULL.
 #'
 #' @return A data frame containing LAI and sd for each site and each time step.
 #' @export
 #' 
 #' @author Dongchen Zhang
 #' @importFrom magrittr %>%
-MODIS_LAI_prep <- function(site_info, time_points, outdir = NULL, search_window = 30, export_csv = FALSE, sd_threshold = 20, skip.download = TRUE){
-  #initialize future parallel computation.
+MODIS_LAI_prep <- function(site_info, time_points, outdir = NULL, search_window = 30, export_csv = FALSE, sd_threshold = 20, skip.download = TRUE, boundary = NULL){
+  # unlist boundary if it's passing from the assembler function.
+  if (is.list(boundary)) {
+    boundary <- as.numeric(unlist(boundary))
+  }
+  # initialize future parallel computation.
   if (future::supportsMulticore()) {
     future::plan(future::multicore, workers = 10)
   } else {
@@ -39,12 +44,17 @@ MODIS_LAI_prep <- function(site_info, time_points, outdir = NULL, search_window 
     PEcAn.logger::logger.info("Extracting previous LAI file!")
     Previous_CSV <- utils::read.csv(file.path(outdir, "LAI.csv"), 
                                     colClasses = c(rep("character", 2), rep("numeric", 4), "character"))
+    # filter out high uncertain LAI records.
     if (!is.null(sd_threshold)) {
       PEcAn.logger::logger.info("filtering out records with high standard errors!")
-      ind.rm <- which(Previous_CSV$sd >= sd_threshold)
+      ind.rm <- which(Previous_CSV$sd >= as.numeric(sd_threshold))
       if (length(ind.rm) > 0) {
         Previous_CSV <- Previous_CSV[-ind.rm,]
       }
+    }
+    # filter out noisy lai records from time series.
+    if (!is.null(boundary)) {
+      Previous_CSV <- MODIS_LAI_ts_filter(Previous_CSV, boundary = boundary)
     }
     LAI_Output <- matrix(NA, length(site_info$site_id), 2*length(time_points)+1) %>% 
       `colnames<-`(c("site_id", paste0(time_points, "_LAI"), paste0(time_points, "_SD"))) %>% as.data.frame()#we need: site_id, LAI, std, target time point.
@@ -92,7 +102,7 @@ MODIS_LAI_prep <- function(site_info, time_points, outdir = NULL, search_window 
                                                                            start = dates$start_date,
                                                                            end = dates$end_date,
                                                                            progress = FALSE)))) {
-              return(list(mean = mean$value, date = mean$calendar_date))
+              return(list(mean = mean$value * as.numeric(mean$scale), date = mean$calendar_date))
             } else {
               return(NA)
             }
@@ -110,7 +120,7 @@ MODIS_LAI_prep <- function(site_info, time_points, outdir = NULL, search_window 
                                                                           start = dates$start_date,
                                                                           end = dates$end_date,
                                                                           progress = FALSE)))) {
-              return(std$value)
+              return(std$value * as.numeric(std$scale))
             } else {
               return(NA)
             }
@@ -151,7 +161,7 @@ MODIS_LAI_prep <- function(site_info, time_points, outdir = NULL, search_window 
           next
         }
         if (!is.null(sd_threshold)) {
-          if (lai_std[[i]][j] >= sd_threshold) {
+          if (lai_std[[i]][j] >= as.numeric(sd_threshold)) {
             next
           }
         }
@@ -159,10 +169,14 @@ MODIS_LAI_prep <- function(site_info, time_points, outdir = NULL, search_window 
                                site_id = new_site_info$site_id[i],
                                lat = new_site_info$lat[i],
                                lon = new_site_info$lon[i],
-                               lai = lai_mean[[i]]$mean[j]*0.1,
-                               sd = lai_std[[i]][j]*0.1,
+                               lai = lai_mean[[i]]$mean[j],
+                               sd = lai_std[[i]][j],
                                qc = lai_qc[[i]][j]))
       }
+    }
+    # filter out noisy lai records from time series.
+    if (!is.null(boundary)) {
+      Previous_CSV <- MODIS_LAI_ts_filter(Previous_CSV, boundary = boundary)
     }
     #Compare with existing CSV file. (We name the CSV file as LAI.csv)
     if(as.logical(export_csv)){
@@ -195,7 +209,31 @@ MODIS_LAI_prep <- function(site_info, time_points, outdir = NULL, search_window 
   PEcAn.logger::logger.info("MODIS LAI Prep Completed!")
   list(LAI_Output = LAI_Output, time_points = time_points, var = "LAI")
 }
-
+#' Prepare MODIS LAI data from the NASA DAAC server for the SDA workflow.
+#'
+#' @param lai.csv data frame: A data frame containing date, site id, lat, lon, lai, sd, and qc columns.
+#' @param boundary numeric: A vector contains the upper and lower quantiles for filtering lai records. The default is c(0.05, 0.95).
+#' 
+#' @return A data frame containing date, site id, lat, lon, lai, sd, and qc columns.
+#' @export
+#' 
+#' @author Dongchen Zhang
+MODIS_LAI_ts_filter <- function(lai.csv, boundary = c(0.05, 0.95)) {
+  # get unique site ids.
+  site.ids <- sort(unique(lai.csv$site_id))
+  # loop over sites.
+  for (i in seq_along(site.ids)) {
+    # get the lai records for the current site.
+    inds <- which(lai.csv$site_id == site.ids[i])
+    temp.lai <- lai.csv$lai[inds]
+    # calculate the upper and lower boundaries for the current lai records.
+    minmax <- quantile(temp.lai, boundary)
+    # find and remove outliers.
+    inds.rm <- which(temp.lai < minmax[1] | temp.lai > minmax[2])
+    lai.csv <- lai.csv[-inds[inds.rm]]
+  }
+  return(lai.csv)
+}
 #' Prepare MODIS LAI data from the NASA DAAC server for the SDA workflow.
 #'
 #' @param site_info list: Bety list of site info including site_id, lon, and lat.
