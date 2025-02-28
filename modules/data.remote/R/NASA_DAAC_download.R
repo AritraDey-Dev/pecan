@@ -11,6 +11,8 @@
 #'   "yyyy-mm-dd".
 #' @param outdir Character: path of the directory in which to save the
 #'   downloaded files. Default is the current work directory(getwd()).
+#' @param credential.folder Character: physical path to the folder that contains 
+#' the credential file. The default is NULL.
 #' @param doi Character: data DOI on the NASA DAAC server, it can be obtained 
 #' directly from the NASA ORNL DAAC data portal (e.g., GEDI L4A through 
 #' https://daac.ornl.gov/cgi-bin/dsviewer.pl?ds_id=2056).
@@ -48,6 +50,7 @@ NASA_DAAC_download <- function(ul_lat,
                                from,
                                to,
                                outdir = getwd(),
+                               credential.folder = NULL,
                                doi,
                                just_path = FALSE) {
   # Determine if we have enough inputs.
@@ -56,7 +59,7 @@ NASA_DAAC_download <- function(ul_lat,
     return(0)
   }
   # setup DAAC Credentials.
-  DAAC_Set_Credential()
+  DAAC_Set_Credential(folder.path = credential.folder)
   # setup arguments for URL.
   daterange <- c(from, to)
   # grab provider and concept id from CMR based on DOI.
@@ -64,34 +67,38 @@ NASA_DAAC_download <- function(ul_lat,
   # setup page number and bounding box.
   page <- 1
   bbox <- paste(ul_lon, lr_lat, lr_lon, ul_lat, sep = ",")
-  # loop over page number.
   # initialize variable for storing data.
   granules_href <- entry <- c()
-  repeat {
-    request_url <- NASA_DAAC_URL(provider = provider_conceptID$provider[1],
-                                 concept_id = provider_conceptID$concept_id[1],
-                                 page = page, 
-                                 bbox = bbox, 
-                                 daterange = daterange)
-    response <- curl::curl_fetch_memory(request_url)
-    content <- rawToChar(response$content)
-    result <- jsonlite::parse_json(content)
-    entry <- c(entry, result$feed$entry)
-    if (response$status_code != 200) {
-      stop(paste("\n", result$errors, collapse = "\n"))
+  # loop over providers.
+  for (i in seq_along(provider_conceptID[[2]])) {
+    # loop over page number.
+    repeat {
+      request_url <- NASA_DAAC_URL(provider = provider_conceptID$provider[i],
+                                   concept_id = provider_conceptID$concept_id[i],
+                                   page = page, 
+                                   bbox = bbox, 
+                                   daterange = daterange)
+      response <- curl::curl_fetch_memory(request_url)
+      content <- rawToChar(response$content)
+      result <- jsonlite::parse_json(content)
+      entry <- c(entry, result$feed$entry)
+      if (response$status_code != 200) {
+        stop(paste("\n", result$errors, collapse = "\n"))
+      }
+      granules <- result$feed$entry
+      if (length(granules) == 0) 
+        break
+      granules_href <- c(granules_href, sapply(granules, function(x) x$links[[1]]$href))
+      page <- page + 1
     }
-    granules <- result$feed$entry
-    if (length(granules) == 0) 
-      break
-    granules_href <- c(granules_href, sapply(granules, function(x) x$links[[1]]$href))
-    page <- page + 1
   }
-  # detect existing files.
-  same.file.inds <- which(basename(granules_href) %in% list.files(outdir))
-  if (length(same.file.inds) > 0) {
-    granules_href <- granules_href[-same.file.inds]
+  # detect existing files if we want to download the files.
+  if (!just_path) {
+    same.file.inds <- which(basename(granules_href) %in% list.files(outdir))
+    if (length(same.file.inds) > 0) {
+      granules_href <- granules_href[-same.file.inds]
+    }
   }
-  
   # if we need to download the data.
   if (length(granules_href) == 0) {
     return(NA)
@@ -168,7 +175,7 @@ NASA_DAAC_download <- function(ul_lat,
     # return paths of downloaded data and the associated metadata.
     return(list(metadata = entry, path = file.path(outdir, basename(granules_href))))
   } else {
-    return(basename(granules_href))
+    return(granules_href)
   }
 }
 #' Create URL that can be used to request data from NASA DAAC server.
@@ -245,14 +252,22 @@ NASA_CMR_finder <- function(doi) {
 
 #' Set NASA DAAC credentials to the current environment.
 #'
-#' @param replace Boolean: determine if we want to replace the current 
-#' credentials from the environment. 
+#' @param replace Boolean: determine if we want to replace the current credentials from the environment. The default is FALSE.
+#' @param folder.path Character: physical path to the folder that contains the credential file. The default is NULL.
 #'
 #' @author Dongchen Zhang
-DAAC_Set_Credential <- function(replace = FALSE) {
+DAAC_Set_Credential <- function(replace = FALSE, folder.path = NULL) {
   if (replace) {
     PEcAn.logger::logger.info("Replace previous stored NASA DAAC credentials.")
   }
+  # if we have the credential file.
+  if (!is.null(folder.path)) {
+    if (file.exists(file.path(folder.path, ".nasadaacapirc"))) {
+      key <- readLines(file.path(folder.path, ".nasadaacapirc"))
+      Sys.setenv(ed_un = key[1], ed_pw = key[2])
+    }
+  }
+  # otherwise we will type the credentials manually.
   if (replace | nchar(Sys.getenv("ed_un")) == 0 | nchar(Sys.getenv("ed_un")) == 0) {
     Sys.setenv(ed_un = sprintf(
       getPass::getPass(msg = "Enter NASA Earthdata Login Username \n (or create an account at urs.earthdata.nasa.gov) :")

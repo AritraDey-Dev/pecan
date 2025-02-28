@@ -13,6 +13,7 @@ NASA_DAAC_download(
   from,
   to,
   outdir = getwd(),
+  credential.folder = NULL,
   doi,
   just_path = FALSE
 )
@@ -36,6 +37,9 @@ NASA_DAAC_download(
 
 \item{outdir}{Character: path of the directory in which to save the
 downloaded files. Default is the current work directory(getwd()).}
+
+\item{credential.folder}{Character: physical path to the folder that contains 
+the credential file. The default is NULL.}
 
 \item{doi}{Character: data DOI on the NASA DAAC server, it can be obtained 
 directly from the NASA ORNL DAAC data portal (e.g., GEDI L4A through 

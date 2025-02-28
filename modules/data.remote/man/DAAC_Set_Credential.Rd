@@ -4,11 +4,12 @@
 \alias{DAAC_Set_Credential}
 \title{Set NASA DAAC credentials to the current environment.}
 \usage{
-DAAC_Set_Credential(replace = FALSE)
+DAAC_Set_Credential(replace = FALSE, folder.path = NULL)
 }
 \arguments{
-\item{replace}{Boolean: determine if we want to replace the current 
-credentials from the environment.}
+\item{replace}{Boolean: determine if we want to replace the current credentials from the environment. The default is FALSE.}
+
+\item{folder.path}{Character: physical path to the folder that contains the credential file. The default is NULL.}
 }
 \description{
 Set NASA DAAC credentials to the current environment.
