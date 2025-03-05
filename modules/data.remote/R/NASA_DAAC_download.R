@@ -11,6 +11,7 @@
 #'   "yyyy-mm-dd".
 #' @param outdir Character: path of the directory in which to save the
 #'   downloaded files. Default is the current work directory(getwd()).
+#' @param band Character: the band name of data to be requested.
 #' @param credential.folder Character: physical path to the folder that contains 
 #' the credential file. The default is NULL.
 #' @param doi Character: data DOI on the NASA DAAC server, it can be obtained 
@@ -18,7 +19,7 @@
 #' https://daac.ornl.gov/cgi-bin/dsviewer.pl?ds_id=2056).
 #' @param just_path Boolean: if we just want the metadata and URL or proceed the actual download.
 #'
-#' @return A list containing meta data and physical path for each data downloaded.
+#' @return Physical paths of downloaded files (just_path = T) or URLs of the files (just_path = F).
 #' @export
 #' 
 #' @examples
@@ -31,14 +32,14 @@
 #' to <- "2022-05-30"
 #' doi <- "10.3334/ORNLDAAC/2183"
 #' outdir <- "/projectnb/dietzelab/dongchen/SHIFT/test_download"
-#' metadata <- NASA_DAAC_download(ul_lat = ul_lat, 
-#'                                ul_lon = ul_lon, 
-#'                                lr_lat = lr_lat, 
-#'                                lr_lon = lr_lon, 
-#'                                from = from, 
-#'                                to = to, 
-#'                                doi = doi,
-#'                                just_path = T)
+#' paths <- NASA_DAAC_download(ul_lat = ul_lat, 
+#'                             ul_lon = ul_lon, 
+#'                             lr_lat = lr_lat, 
+#'                             lr_lon = lr_lon, 
+#'                             from = from, 
+#'                             to = to, 
+#'                             doi = doi,
+#'                             just_path = T)
 #' }
 #' @author Dongchen Zhang
 #' @importFrom foreach %dopar%
@@ -50,6 +51,7 @@ NASA_DAAC_download <- function(ul_lat,
                                from,
                                to,
                                outdir = getwd(),
+                               band = NULL,
                                credential.folder = NULL,
                                doi,
                                just_path = FALSE) {
@@ -68,7 +70,7 @@ NASA_DAAC_download <- function(ul_lat,
   page <- 1
   bbox <- paste(ul_lon, lr_lat, lr_lon, ul_lat, sep = ",")
   # initialize variable for storing data.
-  granules_href <- entry <- c()
+  granules_href <- c()
   # loop over providers.
   for (i in seq_along(provider_conceptID[[2]])) {
     # loop over page number.
@@ -81,16 +83,29 @@ NASA_DAAC_download <- function(ul_lat,
       response <- curl::curl_fetch_memory(request_url)
       content <- rawToChar(response$content)
       result <- jsonlite::parse_json(content)
-      entry <- c(entry, result$feed$entry)
       if (response$status_code != 200) {
         stop(paste("\n", result$errors, collapse = "\n"))
       }
       granules <- result$feed$entry
       if (length(granules) == 0) 
         break
-      granules_href <- c(granules_href, sapply(granules, function(x) x$links[[1]]$href))
+      granules_href <- c(granules_href, sapply(granules, function(x) {
+        links <- c()
+        for (j in seq_along(x$links)) {
+          links <- c(links, x$links[[j]]$href)
+        }
+        return(links)
+      }))
+      if (!is.null(band)) {
+        granules_href <- granules_href[which(grepl(band, granules_href, fixed = T))]
+      }
       page <- page + 1
     }
+  }
+  # remove duplicated files.
+  inds <- which(duplicated(basename(granules_href)))
+  if (length(inds) > 0) {
+    granules_href <- granules_href[-inds]
   }
   # detect existing files if we want to download the files.
   if (!just_path) {
@@ -123,6 +138,8 @@ NASA_DAAC_download <- function(ul_lat,
         .packages=c("httr","Kendall"),
         .options.snow=opts
       ) %dopar% {
+        # if there is a problem in downloading file.
+        while ("try-error" %in% class(try(
         response <-
           httr::GET(
             granules_href[i],
@@ -130,6 +147,15 @@ NASA_DAAC_download <- function(ul_lat,
             httr::authenticate(user = Sys.getenv("ed_un"),
                                password = Sys.getenv("ed_pw"))
           )
+        ))){
+          response <-
+            httr::GET(
+              granules_href[i],
+              httr::write_disk(file.path(outdir, basename(granules_href)[i]), overwrite = T),
+              httr::authenticate(user = Sys.getenv("ed_un"),
+                                 password = Sys.getenv("ed_pw"))
+            )
+        }
         # Check if we can successfully open the downloaded file.
         # if it's H5 file.
         if (grepl(pattern = ".h5", x = basename(granules_href)[i], fixed = T)) {
@@ -173,7 +199,7 @@ NASA_DAAC_download <- function(ul_lat,
       }
     }
     # return paths of downloaded data and the associated metadata.
-    return(list(metadata = entry, path = file.path(outdir, basename(granules_href))))
+    return(file.path(outdir, basename(granules_href)))
   } else {
     return(granules_href)
   }
