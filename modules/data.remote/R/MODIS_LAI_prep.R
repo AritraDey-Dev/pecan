@@ -222,6 +222,7 @@ MODIS_LAI_ts_filter <- function(lai.csv, boundary = c(0.05, 0.95)) {
   # get unique site ids.
   site.ids <- sort(unique(lai.csv$site_id))
   # loop over sites.
+  rm.inds <- c()
   for (i in seq_along(site.ids)) {
     # get the lai records for the current site.
     inds <- which(lai.csv$site_id == site.ids[i])
@@ -230,8 +231,9 @@ MODIS_LAI_ts_filter <- function(lai.csv, boundary = c(0.05, 0.95)) {
     minmax <- quantile(temp.lai, boundary)
     # find and remove outliers.
     inds.rm <- which(temp.lai < minmax[1] | temp.lai > minmax[2])
-    lai.csv <- lai.csv[-inds[inds.rm]]
+    rm.inds <- c(rm.inds, inds[inds.rm])
   }
+  lai.csv <- lai.csv[-rm.inds,]
   return(lai.csv)
 }
 #' Prepare MODIS LAI data from the NASA DAAC server for the SDA workflow.
