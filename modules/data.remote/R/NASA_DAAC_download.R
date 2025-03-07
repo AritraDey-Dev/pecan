@@ -153,12 +153,12 @@ NASA_DAAC_download <- function(ul_lat,
         # if there is a problem in downloading file.
         while ("try-error" %in% class(try(
           response <-
-          httr::GET(
-            granules_href[i],
-            httr::write_disk(file.path(outdir, basename(granules_href)[i]), overwrite = T),
-            httr::authenticate(user = Sys.getenv("ed_un"),
-                               password = Sys.getenv("ed_pw"))
-          )
+            httr::GET(
+              granules_href[i],
+              httr::write_disk(file.path(outdir, basename(granules_href)[i]), overwrite = T),
+              httr::authenticate(user = Sys.getenv("ed_un"),
+                                 password = Sys.getenv("ed_pw"))
+            )
         ))){
           response <-
             httr::GET(
