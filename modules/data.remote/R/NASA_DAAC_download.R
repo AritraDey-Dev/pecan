@@ -89,13 +89,20 @@ NASA_DAAC_download <- function(ul_lat,
       granules <- result$feed$entry
       if (length(granules) == 0) 
         break
-      granules_href <- c(granules_href, sapply(granules, function(x) {
-        links <- c()
-        for (j in seq_along(x$links)) {
-          links <- c(links, x$links[[j]]$href)
-        }
-        return(links)
-      }))
+      # if it's GLANCE product.
+      # GLANCE product has special data archive.
+      if (doi == "10.5067/MEaSUREs/GLanCE/GLanCE30.001") {
+        granules_href <- c(granules_href, sapply(granules, function(x) {
+          links <- c()
+          for (j in seq_along(x$links)) {
+            links <- c(links, x$links[[j]]$href)
+          }
+          return(links)
+        }))
+      } else {
+        granules_href <- c(granules_href, sapply(granules, function(x) x$links[[1]]$href))
+      }
+      # grab specific band.
       if (!is.null(band)) {
         granules_href <- granules_href[which(grepl(band, granules_href, fixed = T))]
       }
@@ -107,6 +114,11 @@ NASA_DAAC_download <- function(ul_lat,
   if (length(inds) > 0) {
     granules_href <- granules_href[-inds]
   }
+  # remove non-image files.
+  inds <- which(grepl(".h5", basename(granules_href)) |
+                  grepl(".tif", basename(granules_href)) |
+                  grepl(".hdf", basename(granules_href)))
+  granules_href <- granules_href[inds]
   # detect existing files if we want to download the files.
   if (!just_path) {
     same.file.inds <- which(basename(granules_href) %in% list.files(outdir))
@@ -140,7 +152,7 @@ NASA_DAAC_download <- function(ul_lat,
       ) %dopar% {
         # if there is a problem in downloading file.
         while ("try-error" %in% class(try(
-        response <-
+          response <-
           httr::GET(
             granules_href[i],
             httr::write_disk(file.path(outdir, basename(granules_href)[i]), overwrite = T),
