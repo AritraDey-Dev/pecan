@@ -36,7 +36,7 @@ on:
         required: false
 
 env:
-  DEFAULT_R_VERSION: "4.1"
+  DEFAULT_R_VERSION: "4.4"
 
 jobs:
   build:

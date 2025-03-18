@@ -1,7 +1,7 @@
 name: Docker GHA
 
 env:
-  DEFAULT_R_VERSION: 4.1
+  DEFAULT_R_VERSION: 4.4
 
 on:
   push:
