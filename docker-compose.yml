@@ -59,6 +59,9 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    ports:
+      - "5672:5672"
+      - "15672:15672"
 
   # ----------------------------------------------------------------------
   # Database to hold the data from PEcAn and BETY.
@@ -363,26 +366,26 @@ services:
   # Shiny Apps
   # ----------------------------------------------------------------------
   # PEcAn DB Sync visualization
-  dbsync:
-    hostname: dbsync
-    platform: linux/amd64
-    image: pecan/shiny-dbsync:${PECAN_VERSION:-latest}
-    restart: unless-stopped
-    networks:
-      - pecan
-    depends_on:
-      postgres:
-        condition: service_healthy
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.dbsync.rule=Host(`${TRAEFIK_HOST:-pecan.localhost}`) && PathPrefix(`/dbsync/`)"
-      - "traefik.http.routers.dbsync.middlewares=dbsync-stripprefix"
-      - "traefik.http.middlewares.dbsync-stripprefix.stripprefix.prefixes=/monitor"
-    healthcheck:
-      test: "curl --silent --fail http://localhost:3838 > /dev/null || exit 1"
-      interval: 10s
-      timeout: 5s
-      retries: 5
+  # dbsync:
+  #   hostname: dbsync
+  #   platform: linux/amd64
+  #   image: pecan/shiny-dbsync:${PECAN_VERSION:-latest}
+  #   restart: unless-stopped
+  #   networks:
+  #     - pecan
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #   labels:
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.dbsync.rule=Host(`${TRAEFIK_HOST:-pecan.localhost}`) && PathPrefix(`/dbsync/`)"
+  #     - "traefik.http.routers.dbsync.middlewares=dbsync-stripprefix"
+  #     - "traefik.http.middlewares.dbsync-stripprefix.stripprefix.prefixes=/monitor"
+  #   healthcheck:
+  #     test: "curl --silent --fail http://localhost:3838 > /dev/null || exit 1"
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
 
   # ----------------------------------------------------------------------
   # PEcAn API
