@@ -11,7 +11,7 @@ import uuid
 import pika
 import shutil
 
-rabbitmq_uri = os.getenv('RABBITMQ_URI', 'amqp://guest:guest@rabbitmq/%2F')
+rabbitmq_uri = os.getenv('RABBITMQ_URI', 'amqp://guest:guest@rabbitmq:15672/%2F')
 default_application = os.getenv('APPLICATION', 'job.sh')
 model_info = None
 
@@ -105,13 +105,13 @@ def receiver():
     # create connection to rabbitmq
     connection = pika.BlockingConnection(pika.URLParameters(rabbitmq_uri))
     channel = connection.channel()
-
+    print(channel)
     # make sure queue exists
     channel.queue_declare(queue=rabbitmq_queue, durable=True)
 
     # receive 1 message at a time, call callback function
     channel.basic_qos(prefetch_count=1)
-    channel.basic_consume(callback, queue=rabbitmq_queue)
+    channel.basic_consume(on_message_callback=callback, queue=rabbitmq_queue,auto_ack=True)
 
     # receive messages
     worker = None

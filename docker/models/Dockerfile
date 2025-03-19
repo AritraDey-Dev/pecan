@@ -12,13 +12,13 @@ FROM ${PARENT_IMAGE}:${IMAGE_VERSION}
 # ----------------------------------------------------------------------
 RUN apt-get update \
     && apt-get install -y --no-install-recommends python3-pip \
-    && pip3 install pika>=1.0.0 \
+    && pip3 install pika==1.3.2 \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /work
 
 # variables to store in docker image
-ENV RABBITMQ_URI="amqp://guest:guest@rabbitmq/%2F" \
+ENV RABBITMQ_URI="amqp://guest:guest@rabbitmq:15672/%2F" \
     APPLICATION="./job.sh"
 
 # actual application that will be executed
