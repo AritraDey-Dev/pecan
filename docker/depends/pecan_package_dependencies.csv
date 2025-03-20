@@ -41,6 +41,7 @@
 "doParallel","*","modules/data.atmosphere","Suggests",FALSE
 "doParallel","*","modules/data.remote","Imports",FALSE
 "doSNOW","*","base/remote","Suggests",FALSE
+"doSNOW","*","modules/data.remote","Suggests",FALSE
 "dplR","*","modules/data.land","Imports",FALSE
 "dplyr","*","base/qaqc","Imports",FALSE
 "dplyr","*","base/remote","Imports",FALSE
@@ -114,6 +115,7 @@
 "gridExtra","*","modules/benchmark","Imports",FALSE
 "gridExtra","*","modules/uncertainty","Imports",FALSE
 "hdf5r","*","models/ed","Imports",FALSE
+"hdf5r","*","modules/data.remote","Suggests",FALSE
 "here","*","base/db","Suggests",FALSE
 "httr","*","base/remote","Imports",FALSE
 "httr","*","modules/data.atmosphere","Imports",FALSE

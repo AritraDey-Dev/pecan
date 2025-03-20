@@ -131,6 +131,11 @@ NASA_DAAC_download <- function(ul_lat,
     return(NA)
   }
   if (!just_path) {
+    # check if the doSNOW package is available.
+    if (!require(doSNOW)) {
+      PEcAn.logger::logger.info("The doSNOW package is not installed.")
+      return(NA)
+    }
     # printing out parallel environment.
     message("using ", ncore, " core")
     message("start downloading ", length(granules_href), " files.")
@@ -171,6 +176,11 @@ NASA_DAAC_download <- function(ul_lat,
         # Check if we can successfully open the downloaded file.
         # if it's H5 file.
         if (grepl(pattern = ".h5", x = basename(granules_href)[i], fixed = T)) {
+          # check if the hdf5r package exists.
+          if (!require(hdf5r)) {
+            PEcAn.logger::logger.info("The hdf5r package is not installed.")
+            return(NA)
+          }
           while ("try-error" %in% class(try(hdf5r::H5File$new(file.path(outdir, basename(granules_href)[i]), mode = "r"), silent = T))) {
             response <-
               httr::GET(
