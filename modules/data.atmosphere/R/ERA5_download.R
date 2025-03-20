@@ -127,37 +127,6 @@ download.ERA5_cds <- function(outfolder, start_date, end_date, extent, variables
     nc.path <- gsub(".grib", ".nc", fname, fixed = T)
     cmd <- paste("grib_to_netcdf", fname, "-o", nc.path)
     out <- system(cmd, intern = F, ignore.stdout = T, ignore.stderr = T)
-    # check if _0001 or _0005 exists in the nc variable names.
-    nc <- ncdf4::nc_open(nc.path, write = T)
-    var.names <- names(nc$var)
-    if (any(grepl("_000", var.names, fixed = T))) {
-      ind.use <- which(grepl("_0001", var.names, fixed = T))
-      ind.aba <- which(grepl("_0005", var.names, fixed = T))
-      # if it is only the case where only _0001 and _0005 are occurring.
-      if ((length(ind.use) + length(ind.aba)) == length(var.names) &
-          length(ind.use) == length(ind.aba)) {
-        # rename variable name with _0001 pattern to its origin name.
-        for (i in ind.use) {
-          nc <- ncdf4::ncvar_rename(nc, var.names[i], gsub(pattern = "_0001", replacement = "", x = var.names[i], fixed = T))
-        }
-        # synchronize nc file.
-        ncdf4::nc_sync(nc)
-        ncdf4::nc_close(nc)
-        # delete variables end with _0005 to make the ERA5_preprocess function work.
-        # rename the nc file to the old file so we can generate a new nc file with the correct name.
-        file.rename(nc.path, gsub(".nc", "_old.nc", nc.path, fixed = T))
-        cmd <- paste("ncks -x -v @VARS@ @OLDNC@ @NEWNC@")
-        cmd <- gsub("@VARS@", paste(var.names[ind.aba], collapse = ","), cmd)
-        cmd <- gsub("@OLDNC@", gsub(".nc", "_old.nc", nc.path, fixed = T), cmd)
-        cmd <- gsub("@NEWNC@", nc.path, cmd)
-        out <- system(cmd, intern = F, ignore.stdout = T, ignore.stderr = T)
-        # delete the old nc file.
-        unlink(gsub(".nc", "_old.nc", nc.path, fixed = T))
-      } else {
-        PEcAn.logger::logger.info("Unknown variable format. Please check the variable mannually!")
-        return(NA)
-      }
-    }
     # store the path.
     nc.paths <- c(nc.paths, nc.path)
     # remove previous grib file.
