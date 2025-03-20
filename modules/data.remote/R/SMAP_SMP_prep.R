@@ -124,9 +124,9 @@ Prep.SMAP.CSV.from.DAAC <- function(site_info, extent, from, to, download.outdir
   } else {
     previous.csv <- NULL
   }
-  # reproject site locations to MODIS projection.
+  # reproject site locations to SMAP projection.
   site.ids <- site_info$site_id
-  site.locs <- cbind(site_info$lon, site_info$lon) %>%
+  site.locs <- cbind(site_info$lon, site_info$lat) %>%
     `colnames<-`(c("lon","lat")) %>%
     `rownames<-`(site.ids)
   pts <- data.frame(lon = site.locs[,1], lat = site.locs[,2])
