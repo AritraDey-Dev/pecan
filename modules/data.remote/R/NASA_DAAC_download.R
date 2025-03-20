@@ -132,7 +132,7 @@ NASA_DAAC_download <- function(ul_lat,
   }
   if (!just_path) {
     # check if the doSNOW package is available.
-    if (!require(doSNOW)) {
+    if ("try-error" %in% class(try(find.package("doSNOW")))) {
       PEcAn.logger::logger.info("The doSNOW package is not installed.")
       return(NA)
     }
@@ -177,7 +177,7 @@ NASA_DAAC_download <- function(ul_lat,
         # if it's H5 file.
         if (grepl(pattern = ".h5", x = basename(granules_href)[i], fixed = T)) {
           # check if the hdf5r package exists.
-          if (!require(hdf5r)) {
+          if ("try-error" %in% class(try(find.package("hdf5r")))) {
             PEcAn.logger::logger.info("The hdf5r package is not installed.")
             return(NA)
           }
