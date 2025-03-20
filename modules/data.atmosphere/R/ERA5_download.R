@@ -21,10 +21,6 @@ download.ERA5_cds <- function(outfolder, start_date, end_date, extent, variables
     PEcAn.logger::logger.info("The grib_to_netcdf function is not detected in shell command.")
     return(NA)
   }
-  if ("try-error" %in% class(try(system("ncks"), silent = T))) {
-    PEcAn.logger::logger.info("The ncks function is not detected in shell command.")
-    return(NA)
-  }
   # setup timeout for download.
   options(timeout=timeout)
   # convert arguments to CDS API specific arguments.
@@ -79,7 +75,7 @@ download.ERA5_cds <- function(outfolder, start_date, end_date, extent, variables
   }
   #check if the token exists for the cdsapi.
   if (!file.exists(file.path(Sys.getenv("HOME"), ".cdsapirc")) & auto.create.key) {
-    if (!require(getPass)) {
+    if ("try-error" %in% class(try(find.package("getPass")))) {
       PEcAn.logger::logger.info("The getPass pacakge is not installed for creating the API key.")
       return(NA)
     } else {
