@@ -3,16 +3,7 @@ name: CI
 on:
   push:
     branches:
-      - main
-      - develop
-    tags:
-      - "v*.*.*"
-  pull_request:
-  merge_group:
-  issue_comment:
-    types:
-      - created
-  workflow_dispatch:
+      - "**"  # Matches all branches
 
 env:
   R_LIBS_USER: /usr/local/lib/R/site-library
@@ -23,7 +14,7 @@ env:
 
 jobs:
   test:
-    if: github.event_name != 'issue_comment' || startsWith(github.event.comment.body, '/build')
+    if: github.event_name != 'issue_comment' || (github.event.comment && startsWith(github.event.comment.body, '/build'))
     strategy:
       fail-fast: false
       matrix:
