@@ -13,7 +13,7 @@
 #' @return A vector containing file paths to the downloaded files.
 #' @export
 #' 
-#' @importFrom magrittr %>%
+#' @importFrom purrr %>%
 #' @author Dongchen Zhang
 download.ERA5_cds <- function(outfolder, start_date, end_date, extent, variables, auto.create.key = T, timeout = 36000) {
   # check shell environments.
