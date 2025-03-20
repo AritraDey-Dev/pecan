@@ -20,7 +20,7 @@ env:
   NCPUS: 2
   PGHOST: postgres
   CI: true
-
+  
 jobs:
   test:
     if: github.event_name != 'issue_comment' || startsWith(github.event.comment.body, '/build')
