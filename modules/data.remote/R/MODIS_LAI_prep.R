@@ -228,7 +228,7 @@ MODIS_LAI_ts_filter <- function(lai.csv, boundary = c(0.05, 0.95)) {
     inds <- which(lai.csv$site_id == site.ids[i])
     temp.lai <- lai.csv$lai[inds]
     # calculate the upper and lower boundaries for the current lai records.
-    minmax <- quantile(temp.lai, boundary)
+    minmax <- stats::quantile(temp.lai, boundary)
     # find and remove outliers.
     inds.rm <- which(temp.lai < minmax[1] | temp.lai > minmax[2])
     rm.inds <- c(rm.inds, inds[inds.rm])
@@ -253,8 +253,8 @@ MODIS_LAI_ts_filter <- function(lai.csv, boundary = c(0.05, 0.95)) {
 Prep.MODIS.CSV.from.DAAC <- function(site_info, extent, from, to, download.outdir, csv.outdir) {
   # load previous CSV file.
   if (file.exists(file.path(csv.outdir, "LAI.csv"))) {
-    previous.csv <- read.csv(file.path(csv.outdir, "LAI.csv"), 
-                             colClasses = c("character", rep("numeric", 5), "character"))
+    previous.csv <- utils::read.csv(file.path(csv.outdir, "LAI.csv"), 
+                                    colClasses = c("character", rep("numeric", 5), "character"))
   } else {
     previous.csv <- NULL
   }
@@ -309,6 +309,8 @@ Prep.MODIS.CSV.from.DAAC <- function(site_info, extent, from, to, download.outdi
   pb <- utils::txtProgressBar(min=1, max=length(modis.out), style=3)
   progress <- function(n) utils::setTxtProgressBar(pb, n)
   opts <- list(progress=progress)
+  # fix github check issue.
+  tile <- NULL
   MODIS.tiles.extents <- foreach::foreach(
     tile = modis.out,
     .packages=c("terra", "Kendall"),
@@ -384,7 +386,7 @@ Prep.MODIS.CSV.from.DAAC <- function(site_info, extent, from, to, download.outdi
   # filter by QC band.
   outputs <- outputs[which(outputs$qc %in% c("000", "001")),]
   # write into CSV file.
-  write.csv(outputs, file = file.path(csv.outdir, "LAI.csv"), row.names = F)
+  utils::write.csv(outputs, file = file.path(csv.outdir, "LAI.csv"), row.names = F)
   # delete downloaded files.
   unlink(list.files(download.outdir, full.names = T), recursive = T)
   return(outputs)

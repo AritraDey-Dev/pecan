@@ -119,8 +119,8 @@ Prep.SMAP.CSV.from.DAAC <- function(site_info, extent, from, to, download.outdir
   smap.crs <- "+proj=cea +lat_ts=30 +lon_0=0 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs"
   # load previous CSV file.
   if (file.exists(file.path(csv.outdir, "SMAP.csv"))) {
-    previous.csv <- read.csv(file.path(csv.outdir, "SMAP.csv"), 
-                             colClasses = c("character", rep("numeric", 5)))
+    previous.csv <- utils::read.csv(file.path(csv.outdir, "SMAP.csv"), 
+                                    colClasses = c("character", rep("numeric", 5)))
   } else {
     previous.csv <- NULL
   }
@@ -175,7 +175,7 @@ Prep.SMAP.CSV.from.DAAC <- function(site_info, extent, from, to, download.outdir
     outputs <- outputs[!duplicated(outputs),]
   }
   # write into CSV file.
-  write.csv(outputs, file = file.path(csv.outdir, "SMAP.csv"), row.names = F)
+  utils::write.csv(outputs, file = file.path(csv.outdir, "SMAP.csv"), row.names = F)
   # delete downloaded files.
   unlink(list.files(download.outdir, full.names = T), recursive = T)
   return(outputs)
