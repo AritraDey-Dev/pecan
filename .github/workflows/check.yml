@@ -94,7 +94,7 @@ jobs:
         RUN_TESTS: "FALSE"
 
     # Debugging: Check logs if timeout/failure occurs
-    - name: Debugging: Post-check analysis
+    - name: Post-check analysis
       if: failure()
       run: |
         echo "Check failed! Analyzing logs..."
