@@ -68,7 +68,7 @@ invert.auto <- function(observed, invert.options,
     ngibbs.max <- 50000
     message("ngibbs.max not provided. ",
             "Setting default to ", ngibbs.max)
-  }
+  } 
   ngibbs.min <- invert.options$ngibbs.min
   if (is.null(ngibbs.min)) {
     ngibbs.min <- 5000
