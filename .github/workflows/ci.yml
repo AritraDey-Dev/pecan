@@ -4,13 +4,14 @@ on:
   push:
     branches:
       - "*"
+
 env:
   R_LIBS_USER: /usr/local/lib/R/site-library
   LC_ALL: en_US.UTF-8
   NCPUS: 2
   PGHOST: postgres
   CI: true
-  
+
 jobs:
   test:
     if: github.event_name != 'issue_comment' || startsWith(github.event.comment.body, '/build')
