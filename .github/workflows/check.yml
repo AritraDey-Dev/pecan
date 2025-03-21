@@ -58,7 +58,7 @@ jobs:
       run: Rscript scripts/generate_dependencies.R && cd docker/depends && Rscript pecan.depends.R
 
     # Debugging: Check modules/rtm before running tests
-    - name: Debugging: Pre-check module files
+    - name: Pre-check module files
       run: |
         echo "Checking if modules/rtm exists..."
         ls -lah modules/rtm || echo "Warning: modules/rtm not found!"
