@@ -65,7 +65,7 @@ invert.auto <- function(observed, invert.options,
 
   ngibbs.max <- invert.options$ngibbs.max
   if (is.null(ngibbs.max)) {
-    ngibbs.max <- 1e6
+    ngibbs.max <- 50000
     message("ngibbs.max not provided. ",
             "Setting default to ", ngibbs.max)
   }
