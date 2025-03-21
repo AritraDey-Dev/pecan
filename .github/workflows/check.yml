@@ -26,6 +26,7 @@ jobs:
       _R_CHECK_LENGTH_1_CONDITION_: true
       _R_CHECK_LENGTH_1_LOGIC2_: true
       # Avoid compilation check warnings that come from the system Makevars
+      # See https://stat.ethz.ch/pipermail/r-package-devel/2019q2/003898.html
       _R_CHECK_COMPILATION_FLAGS_KNOWN_: -Wformat -Werror=format-security -Wdate-time
       # Keep R checks from trying to consult the very flaky worldclockapi.com
       _R_CHECK_SYSTEM_CLOCK_: 0
@@ -34,15 +35,15 @@ jobs:
       image: pecan/depends:develop-R${{ inputs.R-version }}
 
     steps:
-    # Checkout source code
-    - name: Workaround for GitHub Actions safe directory issue
+    # checkout source code
+    - name: work around https://github.com/actions/checkout/issues/766
       run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
     - uses: actions/checkout@v4
       with:
         set-safe-directory: false
 
-    # Forbid spaces in filenames (Makefiles are picky)
-    - name: Check for filenames that would confuse Make
+    # Forbid spaces in names. Yes, *we* know it's not 1980 anymore, but Make doesn't.
+    - name: check for filenames that would confuse Make
       run: |
         SPACENAMES=`find . -name '* *'`
         if [ -n "$SPACENAMES" ]; then
@@ -50,64 +51,19 @@ jobs:
           exit 1
         fi
 
-    # Install required system dependencies
-    - name: Install system utilities
+    # install additional tools needed
+    - name: install utils
       run: apt-get update && apt-get install -y postgresql-client qpdf
-
-    - name: Install R dependencies
+    - name: install new dependencies
       run: Rscript scripts/generate_dependencies.R && cd docker/depends && Rscript pecan.depends.R
 
-    # Debugging: Check modules/rtm before running tests
-    - name: Debugging: Pre-check module files
-      run: |
-        echo "Checking if modules/rtm exists..."
-        ls -lah modules/rtm || echo "Warning: modules/rtm not found!"
-
-        echo "Listing large files in modules/rtm..."
-        find modules/rtm -type f -size +10M -exec ls -lh {} \;
-
-        echo "Checking for large R files..."
-        find modules/rtm -type f -name '*.R' -exec du -h {} + | sort -hr | head -10
-
-        echo "Checking if any infinite loop or process hangs..."
-        ps aux --sort=-%cpu | head -20
-
-    # Run PEcAn checks
-    - name: Run R package check
-      run: |
-        echo "Starting R package check for ${{ inputs.make-grouping }}..."
-        
-        # Capture start time
-        START_TIME=$(date +%s)
-        
-        # Run make and capture output
-        make -j1 ${{ inputs.make-grouping }} 2>&1 | tee check.log
-        
-        # Capture end time
-        END_TIME=$(date +%s)
-        echo "Check duration: $((END_TIME - START_TIME)) seconds"
-        
-        echo "Check logs summary:"
-        tail -n 50 check.log  # Show last 50 lines of log for debugging
+    # run PEcAn checks
+    # The package names of base, modules, and models are passed as matrix variables to avoid repeatability of code
+    - name: check
+      run: make -j1 ${{ inputs.make-grouping }}
       env:
         REBUILD_DOCS: "FALSE"
         RUN_TESTS: "FALSE"
 
-    # Debugging: Check logs if timeout/failure occurs
-    - name: Debugging: Post-check analysis
-      if: failure()
-      run: |
-        echo "Check failed! Analyzing logs..."
-        
-        echo "Listing large log files..."
-        find . -name '*.log' -size +1M -exec ls -lh {} \;
-
-        echo "Checking last errors in logs..."
-        grep -i "error\|warning\|timeout" check.log | tail -n 20 || echo "No error keywords found."
-
-        echo "Current running processes (to check for hangs)..."
-        ps aux --sort=-%cpu | head -20
-
-    # Ensure the repo state is clean after the check
-    - name: Check for out-of-date files
+    - name: check for out-of-date files
       uses: infotroph/tree-is-clean@v1
