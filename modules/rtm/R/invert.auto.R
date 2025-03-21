@@ -81,6 +81,7 @@ invert.auto <- function(observed, invert.options,
     message("ngibbs.step not provided. ",
             "Setting default to ", ngibbs.step)
   }
+  # //klnd
   nchains <- invert.options$nchains
   if (is.null(nchains)) {
     nchains <- 3
