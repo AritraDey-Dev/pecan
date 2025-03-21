@@ -3,17 +3,7 @@ name: CI
 on:
   push:
     branches:
-      - main
-      - develop
-    tags:
-      - "v*.*.*"
-  pull_request:
-  merge_group:
-  issue_comment:
-    types:
-      - created
-  workflow_dispatch:
-# //test gjghh
+      - "*"
 env:
   R_LIBS_USER: /usr/local/lib/R/site-library
   LC_ALL: en_US.UTF-8
