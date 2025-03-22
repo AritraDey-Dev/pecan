@@ -36,7 +36,7 @@
 # Add 'Modules' label to any changes in the modules directory
 'Modules':
 - changed-files:
-  - any-glob-to-any-file: 'modules/rtm/**'
+  - any-glob-to-any-file: 'modules/**'
 
 # Add 'GitHub Actions' label to any changes in the .github/workflows directory
 'GitHub Actions':
