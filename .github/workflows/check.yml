@@ -60,7 +60,7 @@ jobs:
     # run PEcAn checks
     # The package names of base, modules, and models are passed as matrix variables to avoid repeatability of code
     - name: check
-      run:  make -j1 VERBOSE=1 ${{ inputs.make-grouping }}
+      run:  make -j1 VERBOSE=1 ${{ inputs.make-grouping }} ARGS="--as-cran --no-manual --no-build-vignettes"
       env:
         REBUILD_DOCS: "FALSE"
         RUN_TESTS: "FALSE"
