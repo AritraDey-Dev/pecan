@@ -80,5 +80,5 @@ inversion.output <- invert.auto(observed = obs,
                                 return.samples = TRUE,
                                 save.samples = "file/name/for/saving/samples",  # Or NULL if not saving samples
                                 parallel = TRUE,    # Whether or not to run in parallel
-                                parallel.cores = 3 # How many parallel cores
+                                parallel.cores = 10 # How many parallel cores
                                 )
