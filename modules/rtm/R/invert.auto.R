@@ -54,7 +54,7 @@ invert.auto <- function(observed, invert.options,
                         save.samples = NULL,
                         quiet=FALSE,
                         parallel=TRUE,
-                        parallel.cores=NULL,
+                        parallel.cores=2,
                         parallel.output = '/dev/null') {
 
   if (parallel == TRUE) {
