@@ -12,6 +12,14 @@ For more information about this file see also [Keep a Changelog](http://keepacha
 - Documentation of `make` options including addition of `make help` 
 - Add make option to document a single package with `make documentation pathto/package`
 - `settings$host$qsub` and `settings$host$modellauncher$qsub.extra` will now expand `@NJOBS@` to the number of models in the run, allowing e.g. `--array=1-@NJOBS@`. Note that qsub still by default submits every model as a separate job, so for now this is mostly useful for custom modellauncher scripts
+- Introduced an RMarkdown template titled "PEcAn Modular Workflow" to streamline and document the execution of PEcAn workflows. This template facilitates:
+  - Loading necessary PEcAn packages.
+  - Reading and preparing settings from a specified `settings.xml` file.
+  - Conducting trait and meta-analysis.
+  - Writing model configuration files.
+  - Running model simulations and retrieving results.
+  - Performing analyses on model outputs, including sensitivity and ensemble analyses.
+
 
 ### Fixed
 - updated github action to build docker images
