@@ -54,8 +54,8 @@ Imports:
     tidyr,
     tidyselect,
     truncnorm,
-    utils,
     units,
+    utils,
     XML (>= 3.98-1.4),
     xts,
     zoo
