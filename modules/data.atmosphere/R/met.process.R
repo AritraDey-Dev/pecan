@@ -93,7 +93,7 @@ met.process <- function(site, input_met, start_date, end_date, model,
   on.exit(PEcAn.DB::db.close(con), add = TRUE)
   username <- ifelse(is.null(input_met$username), "pecan", input_met$username)
 
-  if (length(host) == 1 && !hasName(host, "name")) {
+  if (length(host) == 1 && !utils::hasName(host, "name")) {
     # We were passed a bare hostname; wrap in a list as downstream fns expect
     host <- list(name = host)
   }
