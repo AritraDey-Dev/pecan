@@ -145,14 +145,14 @@ To perform an inversion, just pass the observation matrix and the inversion sett
  rebuilt on shared hardware where only one processor might be available; for runs on your own machine, 
  you will probably want to set it TRUE to use all the cores on your machine.
 
-```{r}
+```{r eval=FALSE}
 if(file.exists("inversion.output.rds")){
     inversion.output <- readRDS("inversion.output.rds")
 } else {
     inversion.output <- invert.auto(observed = observed,
                                     invert.options = invert.options,
                                     quiet = TRUE,
-                                    parallel = TRUE)
+                                    parallel = FALSE)
     saveRDS(inversion.output, "inversion.output.rds")
 }
 ```

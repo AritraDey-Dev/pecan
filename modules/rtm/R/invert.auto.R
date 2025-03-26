@@ -54,7 +54,7 @@ invert.auto <- function(observed, invert.options,
                         save.samples = NULL,
                         quiet=FALSE,
                         parallel=TRUE,
-                        parallel.cores=3,
+                        parallel.cores=NULL,
                         parallel.output = '/dev/null') {
 
   if (parallel == TRUE) {
@@ -65,10 +65,10 @@ invert.auto <- function(observed, invert.options,
 
   ngibbs.max <- invert.options$ngibbs.max
   if (is.null(ngibbs.max)) {
-    ngibbs.max <- 1e6
+    ngibbs.max <- 50000
     message("ngibbs.max not provided. ",
             "Setting default to ", ngibbs.max)
-  }
+  } 
   ngibbs.min <- invert.options$ngibbs.min
   if (is.null(ngibbs.min)) {
     ngibbs.min <- 5000
@@ -81,6 +81,7 @@ invert.auto <- function(observed, invert.options,
     message("ngibbs.step not provided. ",
             "Setting default to ", ngibbs.step)
   }
+  # //klnd
   nchains <- invert.options$nchains
   if (is.null(nchains)) {
     nchains <- 3
