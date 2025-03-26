@@ -140,12 +140,9 @@ observed <- testspec_ACRU[,1]
 plot(wl, observed, xlab="Wavelength", ylab="Reflectance", type='l')
 ```
 
-To perform an inversion, just pass the observation matrix and the inversion settings into `invert.auto`. `quiet = TRUE` suppresses the progress bar,
- which is done here to clean up the knitted document. We also set `parallel = FALSE` here because this vignette is 
- rebuilt on shared hardware where only one processor might be available; for runs on your own machine, 
- you will probably want to set it TRUE to use all the cores on your machine.
+To perform an inversion, just pass the observation matrix and the inversion settings into `invert.auto`. `quiet = TRUE` suppresses the progress bar, which is done here to clean up the knitted document. We also set `parallel = FALSE` here because this vignette is rebuilt on shared hardware where only one processor might be available; for runs on your own machine, you will probably want to set it TRUE to use all the cores on your machine.
 
-```{r cache=FALSE}
+```{r}
 if(file.exists("inversion.output.rds")){
     inversion.output <- readRDS("inversion.output.rds")
 } else {
@@ -157,10 +154,9 @@ if(file.exists("inversion.output.rds")){
 }
 ```
 
-The output of `invert.auto` is a list of two objects:
- A list of summary statistics for each parameter and an `mcmc.list` object of the samples for diagnostic purposes or calculation of other summary statistics. 
+The output of `invert.auto` is a list of two objects: A list of summary statistics for each parameter and an `mcmc.list` object of the samples for diagnostic purposes or calculation of other summary statistics. 
 
-```{r eval=FALSE}
+```{r}
 par(mfrow=c(2,2))
 plot(inversion.output$samples, auto.layout=FALSE)
 
