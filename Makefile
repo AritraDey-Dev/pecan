@@ -5,10 +5,7 @@ BASE := logger utils db settings visualization qaqc remote workflow
 MODELS := basgra biocro clm45 dalec dvmdostem ed fates gday jules linkages \
 				ldndc lpjguess maat maespa sibcasa sipnet stics template
 
-MODULES := allometry assim.batch assim.sequential benchmark \
-				 data.atmosphere data.land data.remote \
-				 emulator meta.analysis \
-				 photosynthesis priors rtm uncertainty
+MODULES := rtm
 
 # Components not currently included in the build
 # (Most need more development first)
