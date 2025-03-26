@@ -288,7 +288,7 @@ process_output <- function(output.list,
   rm(prev_out)
 
   if (!is.null(save.samples)) {
-    saveRDS(out, file = save.samples,compress = FALSE)
+    saveRDS(out, file = save.samples)
   }
 
   out$nsamp <- coda::niter(out$samples)
