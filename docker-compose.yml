@@ -313,20 +313,20 @@ services:
       - pecan:/data
 
   # PEcAn ED model runner
-  ed2:
-    hostname: ed2-2_2_0
-    user: "${UID:-1001}:${GID:-1001}"
-    image: pecan/model-ed2-2.2.0:${PECAN_VERSION:-latest}
-    restart: unless-stopped
-    networks:
-      - pecan
-    environment:
-      - RABBITMQ_URI=${RABBITMQ_URI:-amqp://guest:guest@rabbitmq/%2F}
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
-    volumes:
-      - pecan:/data
+  # ed2:
+  #   hostname: ed2-2_2_0
+  #   user: "${UID:-1001}:${GID:-1001}"
+  #   image: pecan/model-ed2-2.2.0:${PECAN_VERSION:-latest}
+  #   restart: unless-stopped
+  #   networks:
+  #     - pecan
+  #   environment:
+  #     - RABBITMQ_URI=${RABBITMQ_URI:-amqp://guest:guest@rabbitmq/%2F}
+  #   depends_on:
+  #     rabbitmq:
+  #       condition: service_healthy
+  #   volumes:
+  #     - pecan:/data
 
   # PEcAn MAESPA model runner
   maespa:
