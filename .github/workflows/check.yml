@@ -60,7 +60,7 @@ jobs:
     # run PEcAn checks
     # The package names of base, modules, and models are passed as matrix variables to avoid repeatability of code
     - name: check
-      run:  make -j1 --debug=v ${{ inputs.make-grouping }}
+      run:  time make -j1 --debug=v ${{ inputs.make-grouping }}
       env:
         REBUILD_DOCS: "FALSE"
         RUN_TESTS: "FALSE"
