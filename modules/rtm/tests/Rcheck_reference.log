@@ -1,69 +1,41 @@
-* using log directory ‘/home/user/pecan/rtm.Rcheck’
-* using R version 4.4.3 (2025-02-28)
-* using platform: x86_64-pc-linux-gnu
-* R was compiled by
-    gcc (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0
-    GNU Fortran (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0
-* running under: Ubuntu 24.04.1 LTS
+* using log directory ‘/home/tanishq010/pecan/modules/PEcAnRTM.Rcheck’
+* using R version 4.2.1 (2022-06-23)
+* using platform: x86_64-pc-linux-gnu (64-bit)
 * using session charset: UTF-8
-* using option ‘--no-manual’
-* checking for file ‘rtm/DESCRIPTION’ ... OK
+* using options ‘--no-tests --no-manual --as-cran’
+* checking for file ‘PEcAnRTM/DESCRIPTION’ ... OK
 * checking extension type ... Package
-* this is package ‘PEcAnRTM’ version ‘1.7.3.9000’
+* this is package ‘PEcAnRTM’ version ‘1.7.2’
 * package encoding: UTF-8
+* checking CRAN incoming feasibility ... WARNING
+Maintainer: ‘Alexey Shiklomanov <ashiklom@bu.edu>’
+
+New submission
+
+Strong dependencies not in mainstream repositories:
+  PEcAn.logger, PEcAn.assim.batch
+Suggests or Enhances not in mainstream repositories:
+  PEcAn.utils, PEcAn.ED2
+
 * checking package namespace information ... OK
 * checking package dependencies ... OK
-* checking if this is a source package ... WARNING
-Subdirectory ‘PEcAnRTM/src’ contains apparent object files/libraries
-  /home/user/pecan/modules/rtm/src/PEcAnRTM.so
-Object files/libraries should not be included in a source package.
-
-In addition to the above warning(s), found the following notes:
-
-Found the following apparent object files/libraries:
-  src/RTM/modules/dataSpec/dataSpec_prospect4.o
-  src/RTM/modules/dataSpec/dataSpec_prospect5b.o
-  src/RTM/modules/dataSpec/dataSpec_prospectd.o
-  src/RTM/modules/dataSpec/dataSpec_refractive.o
-  src/RTM/modules/dataSpec/dataSpec_soil.o
-  src/RTM/modules/dataSpec/dataSpec_sun.o
-  src/RTM/modules/dataSpec/dataSpec_wavelength.o
-  src/RTM/modules/mod_types.o src/RTM/pro2s/pro42s.o
-  src/RTM/pro2s/pro52s.o src/RTM/pro2s/pro5B2s.o
-  src/RTM/prosail/prosail.main.o src/RTM/prosail/prosaild.main.o
-  src/RTM/prospect/prospect.4.o src/RTM/prospect/prospect.5.o
-  src/RTM/prospect/prospect.5B.o src/RTM/prospect/prospect.D.o
-  src/RTM/prospect/prospect.expint.o src/RTM/prospect/prospect.gpm.o
-  src/RTM/prospect/prospect.tav.o src/RTM/sail/sail.brdf.o
-  src/RTM/sail/sail.hotspot.o src/RTM/sail/sail.lidf.o
-  src/RTM/sail/sail.refltrans.o src/RTM/sail/sail.sail.o
-  src/RTM/sail/sail.sensgeom.o src/RTM/sail/sail.suits.o
-  src/RTM/sail/sail.volscatt.o src/RTM/twostream/gamma.functions.o
-  src/RTM/twostream/meador.o src/RTM/twostream/mod_biggamma.o
-  src/RTM/twostream/mod_hapke_soil.o src/RTM/twostream/two.stream.o
-Object files/libraries should not be included in a source package.
+* checking if this is a source package ... OK
 * checking if there is a namespace ... OK
 * checking for executable files ... OK
-* checking for hidden files and directories ... NOTE
-Found the following hidden files and directories:
-  .gitignore
-  data/.gitignore
-  tests/.gitignore
-  tests/testthat/.gitignore
-These were most likely included in error. See section ‘Package
-structure’ in the ‘Writing R Extensions’ manual.
+* checking for hidden files and directories ... OK
 * checking for portable file names ... OK
 * checking for sufficient/correct file permissions ... OK
+* checking serialization versions ... OK
 * checking whether package ‘PEcAnRTM’ can be installed ... OK
 * checking installed package size ... OK
 * checking package directory ... OK
-* checking DESCRIPTION meta-information ... NOTE
-Checking should be performed on sources prepared by ‘R CMD build’.
+* checking for future file timestamps ... OK
+* checking DESCRIPTION meta-information ... OK
 * checking top-level files ... OK
 * checking for left-over files ... OK
 * checking index information ... OK
 * checking package subdirectories ... OK
-* checking code files for non-ASCII characters ... OK
+* checking R files for non-ASCII characters ... OK
 * checking R files for syntax errors ... OK
 * checking whether the package can be loaded ... OK
 * checking whether the package can be loaded with stated dependencies ... OK
@@ -71,26 +43,35 @@ Checking should be performed on sources prepared by ‘R CMD build’.
 * checking whether the namespace can be loaded with stated dependencies ... OK
 * checking whether the namespace can be unloaded cleanly ... OK
 * checking loading without being on the library search path ... OK
-* checking dependencies in R code ... NOTE
+* checking use of S3 registration ... OK
+* checking dependencies in R code ... WARNING
 Namespace in Imports field not imported from: ‘lubridate’
   All declared Imports should be used.
 Unexported object imported by a ':::' call: ‘stats:::C_acf’
   See the note in ?`:::` about the use of this operator.
+  Including base/recommended package(s):
+  ‘stats’
 * checking S3 generic/method consistency ... WARNING
 neff:
   function(x, ...)
 neff.default:
   function(x, lag.max, min_rho)
 
+plot:
+  function(x, ...)
+plot.spectra:
+  function(spectra, type, ...)
+
 print:
   function(x, ...)
 print.spectra:
   function(spectra, n, ...)
 
-plot:
-  function(x, ...)
-plot.spectra:
-  function(spectra, type, ...)
+str:
+  function(object, ...)
+str.spectra:
+  function(spectra, ...)
+
 See section ‘Generic functions and methods’ in the ‘Writing R
 Extensions’ manual.
 * checking replacement functions ... OK
@@ -168,8 +149,18 @@ Consider adding
   importFrom("utils", "data", "head", "modifyList", "read.csv",
              "read.table", "setTxtProgressBar", "tail", "txtProgressBar")
 to your NAMESPACE file.
+
+Found the following calls to data() loading into the global environment:
+File ‘PEcAnRTM/R/defparam.R’:
+  data(model.list)
+File ‘PEcAnRTM/R/edr.wrapper.R’:
+  data(pftmapping, package = "PEcAn.ED2")
+File ‘PEcAnRTM/R/generate-rsr.R’:
+  data(raw.sensor.data)
+See section ‘Good practice’ in ‘?data’.
 * checking Rd files ... OK
 * checking Rd metadata ... OK
+* checking Rd line widths ... OK
 * checking Rd cross-references ... OK
 * checking for missing documentation entries ... WARNING
 Undocumented data sets:
@@ -193,22 +184,21 @@ Extensions’ manual.
 * checking for GNU extensions in Makefiles ... OK
 * checking for portable use of $(BLAS_LIBS) and $(LAPACK_LIBS) ... OK
 * checking use of PKG_*FLAGS in Makefiles ... OK
-* checking compiled code ... OK
-* checking files in ‘vignettes’ ... WARNING
-Files in the 'vignettes' directory but no files in 'inst/doc':
-  ‘edr.sensitivity.R’ ‘invert.edr.R’ ‘pecanrtm.vignette.Rmd’
-  ‘test.edr.R’
+* checking use of SHLIB_OPENMP_*FLAGS in Makefiles ... OK
+* checking pragmas in C/C++ headers and code ... OK
+* checking compilation flags used ... OK
+* checking compiled code ... NOTE
+File ‘PEcAnRTM/libs/PEcAnRTM.so’:
+  Found no calls to: ‘R_registerRoutines’, ‘R_useDynamicSymbols’
+
+It is good practice to register native routines and to disable symbol
+search.
+
+See ‘Writing portable packages’ in the ‘Writing R Extensions’ manual.
+* checking files in ‘vignettes’ ... OK
 * checking examples ... OK
-* checking for unstated dependencies in ‘tests’ ... WARNING
-'library' or 'require' call not declared from: ‘microbenchmark’
-* checking tests ... OK
-  Running ‘benchmark_spectra.R’
-  Running ‘testthat.R’
-* checking for unstated dependencies in vignettes ... OK
-* checking package vignettes ... WARNING
-Directory 'inst/doc' does not exist.
-Package vignette without corresponding single PDF/HTML:
-  ‘pecanrtm.vignette.Rmd’
-* checking re-building of vignette outputs ... OK
+* checking for non-standard things in the check directory ... OK
+* checking for detritus in the temp directory ... OK
 * DONE
-Status: 7 WARNINGs, 4 NOTEs
+
+Status: 10 WARNINGs, 3 NOTEs
