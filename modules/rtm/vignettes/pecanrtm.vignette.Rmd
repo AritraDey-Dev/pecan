@@ -8,7 +8,9 @@ vignette: >
 ---
 
 ```{r, setup, include=FALSE,cache=TRUE}
-knitr::opts_chunk$set(fig.width = 6, fig.height = 4.5, out.width = '100%', dpi=60)
+  cache = TRUE, 
+  cache.path = "vignettes/.cache/",  # Custom cache location
+  fig.width = 6, fig.height = 4.5, out.width = '100%', dpi=60
 ```
 
 # Introduction
