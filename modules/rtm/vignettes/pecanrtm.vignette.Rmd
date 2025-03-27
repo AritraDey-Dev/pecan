@@ -143,6 +143,7 @@ plot(wl, observed, xlab="Wavelength", ylab="Reflectance", type='l')
 To perform an inversion, just pass the observation matrix and the inversion settings into `invert.auto`. `quiet = TRUE` suppresses the progress bar, which is done here to clean up the knitted document. We also set `parallel = FALSE` here because this vignette is rebuilt on shared hardware where only one processor might be available; for runs on your own machine, you will probably want to set it TRUE to use all the cores on your machine.
 
 ```{r}
+install.packages("qs")
 library(qs)
 
 if (file.exists("inversion.output.qs")) {
