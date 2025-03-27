@@ -143,34 +143,38 @@ plot(wl, observed, xlab="Wavelength", ylab="Reflectance", type='l')
 To perform an inversion, just pass the observation matrix and the inversion settings into `invert.auto`. `quiet = TRUE` suppresses the progress bar, which is done here to clean up the knitted document. We also set `parallel = FALSE` here because this vignette is rebuilt on shared hardware where only one processor might be available; for runs on your own machine, you will probably want to set it TRUE to use all the cores on your machine.
 
 ```{r}
-if (file.exists("inversion.output.rds")) {
-    inversion.output <- readRDS("inversion.output.rds")
-} else {
-    # Step 1: Run invert.auto() and log execution time
-    start_time <- Sys.time()
-    print(paste("Starting invert.auto() at:", start_time))
+log_message <- function(msg) {
+  timestamp <- Sys.time()
+  message <- paste("[LOG]", timestamp, msg)
+  print(message)
+  flush.console()  # Ensures immediate log output in GitHub Actions
+}
 
-    inversion.output <- invert.auto(
-        observed = observed,
-        invert.options = invert.options,
-        quiet = TRUE,
-        parallel = FALSE
-    )
+# Start timing invert.auto()
+start_time <- Sys.time()
+log_message("Starting invert.auto()")
 
-    mid_time <- Sys.time()
-    print(paste("invert.auto() completed at:", mid_time))
-    print(paste("Time taken for invert.auto():", difftime(mid_time, start_time, units = "secs")))
+inversion.output <- invert.auto(
+  observed = observed,
+  invert.options = invert.options,
+  quiet = TRUE,
+  parallel = FALSE
+)
 
-    # # Step 2: Save the results and log execution time
-    # print(paste("Starting saveRDS() at:", mid_time))
-    
-    # saveRDS(inversion.output, "inversion.output.rds")
+mid_time <- Sys.time()
+log_message(paste("invert.auto() completed. Time taken:", difftime(mid_time, start_time, units = "secs")))
 
-    # end_time <- Sys.time()
-    # print(paste("saveRDS() completed at:", end_time))
-    # print(paste("Time taken for saveRDS():", difftime(end_time, mid_time, units = "secs")))
+# Start timing saveRDS()
+log_message("Starting saveRDS()")
 
-    # print(paste("Total execution time:", difftime(end_time, start_time, units = "secs")))
+saveRDS(inversion.output, "inversion.output.rds")
+
+end_time <- Sys.time()
+log_message(paste("saveRDS() completed. Time taken:", difftime(end_time, mid_time, units = "secs")))
+
+# Total execution time
+log_message(paste("Total script execution time:", difftime(end_time, start_time, units = "secs")))
+
 }
 
 ```
