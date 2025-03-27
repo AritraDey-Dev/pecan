@@ -143,15 +143,18 @@ plot(wl, observed, xlab="Wavelength", ylab="Reflectance", type='l')
 To perform an inversion, just pass the observation matrix and the inversion settings into `invert.auto`. `quiet = TRUE` suppresses the progress bar, which is done here to clean up the knitted document. We also set `parallel = FALSE` here because this vignette is rebuilt on shared hardware where only one processor might be available; for runs on your own machine, you will probably want to set it TRUE to use all the cores on your machine.
 
 ```{r}
-if(file.exists("inversion.output.rds")){
-    inversion.output <- readRDS("inversion.output.rds")
+library(qs)
+
+if (file.exists("inversion.output.qs")) {
+    inversion.output <- qread("inversion.output.qs")
 } else {
     inversion.output <- invert.auto(observed = observed,
                                     invert.options = invert.options,
                                     quiet = TRUE,
                                     parallel = FALSE)
-    saveRDS(inversion.output, "inversion.output.rds", compress = "bzip2")
+    qsave(inversion.output, "inversion.output.qs", preset = "high")
 }
+
 ```
 
 The output of `invert.auto` is a list of two objects: A list of summary statistics for each parameter and an `mcmc.list` object of the samples for diagnostic purposes or calculation of other summary statistics. 
