@@ -175,7 +175,7 @@ log_message(paste("saveRDS() completed. Time taken:", difftime(end_time, mid_tim
 # Total execution time
 log_message(paste("Total script execution time:", difftime(end_time, start_time, units = "secs")))
 
-}
+
 
 ```
 
