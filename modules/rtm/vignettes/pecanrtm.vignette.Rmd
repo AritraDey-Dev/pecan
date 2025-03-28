@@ -149,7 +149,8 @@ if(file.exists("inversion.output.rds")){
     inversion.output <- invert.auto(observed = observed,
                                     invert.options = invert.options,
                                     quiet = TRUE,
-                                    parallel = FALSE)
+                                    parallel = TRUE,
+                                    parallel.cores = 3)
     saveRDS(inversion.output, "inversion.output.rds")
 }
 ```
