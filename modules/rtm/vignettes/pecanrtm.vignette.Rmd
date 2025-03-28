@@ -140,7 +140,10 @@ observed <- testspec_ACRU[,1]
 plot(wl, observed, xlab="Wavelength", ylab="Reflectance", type='l')
 ```
 
-To perform an inversion, just pass the observation matrix and the inversion settings into `invert.auto`. `quiet = TRUE` suppresses the progress bar, which is done here to clean up the knitted document. We also set `parallel = FALSE` here because this vignette is rebuilt on shared hardware where only one processor might be available; for runs on your own machine, you will probably want to set it TRUE to use all the cores on your machine.
+To perform an inversion, just pass the observation matrix and the inversion settings into `invert.auto`. `quiet = TRUE` 
+suppresses the progress bar, which is done here to clean up the knitted document. We also set `parallel = FALSE` h
+ere because this vignette is rebuilt on shared hardware where only one processor might be available;
+ for runs on your own machine, you will probably want to set it TRUE to use all the cores on your machine.
 
 ```{r}
 if(file.exists("inversion.output.rds")){
@@ -149,8 +152,7 @@ if(file.exists("inversion.output.rds")){
     inversion.output <- invert.auto(observed = observed,
                                     invert.options = invert.options,
                                     quiet = TRUE,
-                                    parallel = TRUE,
-                                    parallel.cores = 3)  
+                                    parallel = TRUE)  
     saveRDS(inversion.output, "inversion.output.rds")
 }
 ```
