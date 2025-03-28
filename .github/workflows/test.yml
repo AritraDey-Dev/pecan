@@ -10,7 +10,7 @@ on:
 env:
   R_LIBS_USER: /usr/local/lib/R/site-library
   LC_ALL: en_US.UTF-8
-  NCPUS: 2
+  NCPUS: 4
   PGHOST: postgres
   CI: true
 
