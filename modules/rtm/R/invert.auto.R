@@ -292,8 +292,8 @@ process_output <- function(output.list,
   }
 
   out$nsamp <- coda::niter(out$samples)
-  nburn <- min(floor(out$nsamp/2), iter_conv_check)
-  burned_samples <- window(out$samples, start = nburn)
+  nburn <- min(floor(out$nsamp / 2), iter_conv_check)
+  burned_samples <- stats::window(out$samples, start = nburn)
   check_initial <- check.convergence(burned_samples,
                                      threshold = threshold,
                                      autoburnin = FALSE)

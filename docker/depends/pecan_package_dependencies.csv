@@ -563,6 +563,7 @@
 "stats","*","models/sipnet","Imports",FALSE
 "stats","*","modules/allometry","Imports",FALSE
 "stats","*","modules/assim.batch","Imports",FALSE
+"stats","*","modules/rtm","Suggests",FALSE
 "stats","*","modules/assim.sequential","Suggests",FALSE
 "stats","*","modules/photosynthesis","Imports",FALSE
 "SticsRFiles","*","models/stics","Suggests",FALSE
