@@ -150,7 +150,7 @@ if(file.exists("inversion.output.rds")){
                                     invert.options = invert.options,
                                     quiet = TRUE,
                                     parallel = TRUE,
-                                    parallel.cores = min(2, parallel::detectCores() - 1))  
+                                    parallel.cores = min(10, parallel::detectCores() - 1))  
     saveRDS(inversion.output, "inversion.output.rds")
 }
 ```
