@@ -2,6 +2,4 @@
 ^\.Rproj\.user$
 ^dev
 ^tests
-^data/sensor.rsr.RData$
-^data/testspec.RData$
-^inst/doc/pecanrtm.vignette.html$
+
