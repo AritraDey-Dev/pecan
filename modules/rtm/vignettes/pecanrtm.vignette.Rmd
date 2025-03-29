@@ -163,14 +163,14 @@ par(mfrow=c(2,2))
 plot(inversion.output$samples, auto.layout=FALSE)
 
 par(mfrow=c(1,1))
-samples.mat <- as.matrix(inversion.output$samples)[-(2000:0),1:]
-colnames(samples.mat) <- params.prospect5
-pairs(samples.mat, pch=".")
+samples.mat <- as.matrix(inversion.output$samples)[-seq(2000,1), 1:3]  # Reduce size  
+pairs(samples.mat, pch=".")  
 
-means <- unlist(inversion.output$results[grep("mu", names(inversion.output$results))])[1:5]
-prospect.sim <- prospect(means, 5)[,1]  # reflectance
+means <- head(unlist(inversion.output$results[grep("mu", names(inversion.output$results))]), 3)  # Reduce stored data  
+prospect.sim <- prospect(means, 5)[,1]  
 
 plot(wl, observed, type='l', col=1, xlab="wavelength (nm)", ylab="reflectance")
-lines(wl, prospect.sim, type='l', col=2)
+lines(wl, prospect.sim, col=2)
 legend("topright", c("observed", "predicted"), lty=1, col=1:2)
+
 ```
