@@ -173,7 +173,6 @@ plot(wl, observed, type='l', col=1, xlab="wavelength (nm)", ylab="reflectance")
 lines(wl, prospect.sim, col=2)
 legend("topright", c("observed", "predicted"), lty=1, col=1:2)
 
-rm(samples.mat, means, prospect.sim)  # Free memory  
-gc()
+
 
 ```
