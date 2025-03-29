@@ -152,7 +152,7 @@ if(file.exists("inversion.output.rds")){
                                     invert.options = invert.options,
                                     quiet = TRUE,
                                     parallel = FALSE)  
-    saveRDS(inversion.output, "inversion.output.rds")
+    saveRDS(inversion.output, "inversion.output.rds",compress="gzip")
 }
 ```
 
