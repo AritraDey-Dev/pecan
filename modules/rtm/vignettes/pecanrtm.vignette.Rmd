@@ -144,7 +144,7 @@ suppresses the progress bar, which is done here to clean up the knitted document
 ere because this vignette is rebuilt on shared hardware where only one processor might be available;
  for runs on your own machine, you will probably want to set it TRUE to use all the cores on your machine.
 
-```{r eval=FALSE}
+```{r }
 if(file.exists("inversion.output.rds")){
     inversion.output <- readRDS("inversion.output.rds")
 } else {
