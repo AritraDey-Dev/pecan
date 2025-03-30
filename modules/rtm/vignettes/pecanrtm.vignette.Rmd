@@ -119,10 +119,10 @@ The recommended way to set settings is to start with a default object and modify
 
 ```{r}   
 invert.options$nchains <- 2      # Reduce from default 3 to 2 chains
-invert.options$ngibbs.max <- 1000 # Reduce from 5e4 to 1000
-invert.options$ngibbs.min <- 500  # Reduce from 5000 to 500
+invert.options$ngibbs.max <- 2000 # Reduce from 5e4 to 1000
+invert.options$ngibbs.min <- 1000  # Reduce from 5000 to 500
 invert.options$burnin <- 200      # Reduce from 1000 to 200
-invert.options$iter_conv_check <- 500 # Reduce from 15000 to 500
+invert.options$iter_conv_check <- 1000 # Reduce from 15000 to 500
 invert.options$threshold <- 1.3  # Make convergence criteria less strict for demo
 ```
 
