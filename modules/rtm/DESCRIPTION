@@ -35,7 +35,7 @@ OS_type: unix
 License: BSD_3_clause + file LICENSE
 Copyright: Authors
 LazyLoad: yes
-LazyData: true
+LazyData: FALSE
 Encoding: UTF-8
 VignetteBuilder: knitr, rmarkdown
 Roxygen: list(markdown = TRUE)
