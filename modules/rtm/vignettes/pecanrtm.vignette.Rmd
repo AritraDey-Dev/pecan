@@ -8,14 +8,7 @@ vignette: >
 ---
 
 ```{r, setup, include=FALSE}
-knitr::opts_chunk$set(  fig.width = 6, 
-  fig.height = 4.5, 
-  out.width = '75%',    # Reduced from 100%
-  dpi = 72,             # Slightly increased from 60 for better compression
-  dev = 'png',          # Use png instead of PDF
-  fig.compress = TRUE,
-  cache = TRUE,         # Cache results
-  cache.lazy = TRUE)
+knitr::opts_chunk$set(fig.width = 6, fig.height = 4.5, out.width = '80%', dpi=72, fig.retina = 1)
 ```
 
 # Introduction
@@ -168,6 +161,13 @@ A list of summary statistics for each parameter and an `mcmc.list` object of the
 
 
 ```{r }
+par(mfrow=c(2,2))
+plot(inversion.output$samples, auto.layout=FALSE)
+
+par(mfrow=c(1,1))
+samples.mat <- as.matrix(inversion.output$samples)[-(2000:0),1:5]
+colnames(samples.mat) <- params.prospect5
+pairs(samples.mat, pch=".")
 
 means <- unlist(inversion.output$results[grep("mu", names(inversion.output$results))])[1:5]
 prospect.sim <- prospect(means, 5)[,1]  # reflectance
