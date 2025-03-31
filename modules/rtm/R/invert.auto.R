@@ -101,7 +101,7 @@ invert.auto <- function(observed, invert.options,
   }
   iter_conv_check <- invert.options$iter_conv_check
   if (is.null(iter_conv_check)) {
-    iter_conv_check <- 15000
+    iter_conv_check <- 1500
     message("iter_conv_check not provided. ",
             "Setting default to ", iter_conv_check)
   }

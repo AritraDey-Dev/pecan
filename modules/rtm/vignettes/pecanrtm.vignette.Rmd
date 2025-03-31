@@ -121,7 +121,7 @@ The recommended way to set settings is to start with a default object and modify
 invert.options$nchains <- 2      # Number of MCMC chains
 invert.options$ngibbs.max <- 1e4    # Number of iterations per chain
 invert.options$burnin <- 1000    # Length of burnin period
-invert.options$do.lsq.first <- TRUE # Initialize with results from a fast least-squares optimization algorithm
+invert.options$do.lsq <- TRUE    # Use least-squares inversion
 invert.options$threshold <- 1.3  # Maximum value for Gelman diagnostic
 ```
 
