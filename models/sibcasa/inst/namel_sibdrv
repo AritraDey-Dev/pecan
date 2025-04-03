@@ -9,13 +9,13 @@ $IOLIST_SIBDRV
       ic_path       = @INITIAL_CONDITIONS_PATH@
       dr_format     = "(""@SITE_MET@"",i4.4,i2.2,"".nc"")"
       out_path      = @OUTDIR@
-      qp_path       = "/projectnb/dietzelab/tonygard/sibcasa/PEcAn/SiB/sibcasa_arctic4/sib_qpopts"
-      pbp_path      = "/projectnb/dietzelab/tonygard/sibcasa/PEcAn/SiB/sibcasa_arctic4/sib_pbpopts"
-      co2_path      = "/projectnb/dietzelab/tonygard/sibcasa/gimmsg_0.5x0.5_CRUNCEP_30d/sib_param_RCP85/sib_param"
-      grid_path     = "/gpfs/summit/datasets/SibCasa/drivers/mask/mask_perm_0.5x0.5.nc"
+      qp_path       = "@QP_PATH@"
+      pbp_path      = "@PBP_PATH@"
+      co2_path      = "@CO2_PATH@"
+      grid_path     = "@GRID_PATH@"
       drvr_type     = 'std'
-      casa_config_path= "/projectnb/dietzelab/tonygard/sibcasa/PEcAn/SiB/input/config_biome"
-/
+      casa_config_path= "@CASA_CONFIG_PATH@"
+/ 
 
 $SUBGRID_SIBDRV
     minlon = @SITE_LON@,

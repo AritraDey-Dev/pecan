@@ -1,4 +1,3 @@
-
 #-------------------------------------------------------------------------------------------------#
 #' Writes a SIBCASA config file.
 #'
@@ -13,7 +12,6 @@
 #' @export
 #' @author Anthony Gardella, Rob Kooper
 write.config.SIBCASA <- function(defaults, trait.values, settings, run.id) {
-
 
   # find out where to write run/ouput
   rundir <- file.path(settings$host$rundir, run.id)
@@ -75,6 +73,19 @@ write.config.SIBCASA <- function(defaults, trait.values, settings, run.id) {
   namel_sibdrv <- gsub("@END_YEAR@", format(settings$run$end.date, "%Y"), nl_sib)
   namel_sibdrv <- gsub("@OUTDIR@", settings$host$outdir, nl_sib)
   namel_sibdrv <- gsub("@OUTFILE@", paste0("out", run.id), nl_sib)
+
+  # Dynamically set the values for qp_path, pbp_path, co2_path, grid_path, and casa_config_path
+  qp_path <- settings$run$inputs$qp_path
+  pbp_path <- settings$run$inputs$pbp_path
+  co2_path <- settings$run$inputs$co2_path
+  grid_path <- settings$run$inputs$grid_path
+  casa_config_path <- settings$run$inputs$casa_config_path
+
+  namel_sibdrv <- gsub("@QP_PATH@", qp_path, namel_sibdrv)
+  namel_sibdrv <- gsub("@PBP_PATH@", pbp_path, namel_sibdrv)
+  namel_sibdrv <- gsub("@CO2_PATH@", co2_path, namel_sibdrv)
+  namel_sibdrv <- gsub("@GRID_PATH@", grid_path, namel_sibdrv)
+  namel_sibdrv <- gsub("@CASA_CONFIG_PATH@", casa_config_path, namel_sibdrv)
 
   #-----------------------------------------------------------------------
   writeLines(namel_sibdrv, con = file.path(settings$rundir, run.id, "namel_sibdrv"))
