@@ -59,3 +59,4 @@ LazyData: true
 Encoding: UTF-8
 RoxygenNote: 7.3.2
 Roxygen: list(markdown = TRUE)
+X-schema.org-keywords: PEcAn, utilities, functions, tools, data manipulation, scientific workflow, model parameterization, data analysis, netCDF handling, time series analysis, unit conversion, data processing, scientific computing, ecological forecasting, model execution, data integration, workflow management, scientific investigation

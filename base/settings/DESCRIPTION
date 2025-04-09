@@ -31,3 +31,4 @@ Suggests:
 Encoding: UTF-8
 RoxygenNote: 7.3.2
 Roxygen: list(markdown = TRUE)
+X-schema.org-keywords: PEcAn, settings, functions, files, configuration management, XML parsing, parameter settings, workflow configuration, model parameters, environment variables, system settings, data settings, simulation settings, scientific workflow, configuration files, settings validation, parameter management

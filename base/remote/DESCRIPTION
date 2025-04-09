@@ -35,3 +35,4 @@ Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
+X-schema.org-keywords: PEcAn, remote, model, execution, utilities, communication, code, distributed computing, remote hosts, parallel processing, ecosystem modeling, workflow automation, SSH, HTTP, JSON, API integration, cluster computing, scientific computing, model deployment

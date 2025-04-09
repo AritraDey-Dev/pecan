@@ -54,3 +54,4 @@ Encoding: UTF-8
 VignetteBuilder: knitr, rmarkdown
 RoxygenNote: 7.3.2
 Roxygen: list(markdown = TRUE)
+X-schema.org-keywords: PEcAn, visualization, functions, data, models, data visualization, scientific plotting, model output visualization, time series plots, spatial visualization, statistical graphics, ggplot2, data analysis, scientific communication, model diagnostics, ecological data visualization, climate data visualization, scientific figures, data exploration

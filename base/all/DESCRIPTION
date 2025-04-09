@@ -78,3 +78,4 @@ LazyData: true
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
+X-schema.org-keywords: PEcAn, QAQC, integration, model, skill, testing, quality assurance, quality control, model validation, model evaluation, performance metrics, statistical analysis, data visualization, model diagnostics, benchmarking, model comparison, scientific validation, reproducibility
