@@ -51,7 +51,7 @@ RUN apt-get update \
 
 COPY docker/docs/index.html /usr/local/apache2/htdocs/
 COPY --from=pecandocs /src/book_source/_book/ /usr/local/apache2/htdocs/docs/pecan/
-COPY --from=pecandocs /pkgdoc/package_documentation/pkgdocs/ /usr/local/apache2/htdocs/pkgdocs/
+COPY --from=pecandocs /pkgdoc/_pkgdown_docs/ /usr/local/apache2/htdocs/pkgdocs/
 
 # ----------------------------------------------------------------------
 # PEcAn version information

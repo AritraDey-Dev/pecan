@@ -63,7 +63,7 @@ jobs:
         fi
         cd package-documentation
         mkdir -p $VERSION
-        rsync -a --delete pkgdocs/ ${VERSION}/
+        rsync -a --delete ../_pkgdown_docs/ ${VERSION}/
         git add --all *
         git commit -m "Build pkgdown docs from pecan revision ${GITHUB_SHA}" || true
         git push -q origin main
