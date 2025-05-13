@@ -86,4 +86,4 @@ LazyData: FALSE
 VignetteBuilder: knitr, rmarkdown
 Encoding: UTF-8
 RoxygenNote: 7.3.2
-X-schema.org-keywords: climate-data, meteorological-variables, data-standardization, atmospheric-forcing, data-conversion, weather-data, climate-drivers, data-processing, data-quality-control, data-interpolation, data-downscaling, data-assimilation, climate-forecasting, climate-reanalysis, climate-observations, climate-models, climate-variables, climate-data-sources, climate-data-formats, climate-data-validation, climate-data-transformation, climate-data-integration, climate-data-visualization, climate-data-analysis, climate-data-management, climate-data-archiving, climate-data-distribution, climate-data-access, climate-data-services
+X-schema.org-keywords: climate-data, atmospheric-forcing, data-standardization, data-assimilation, climate-reanalysis, weather-data, data-processing

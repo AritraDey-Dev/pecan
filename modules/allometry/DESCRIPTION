@@ -31,4 +31,5 @@ LazyData: FALSE
 Encoding: UTF-8
 RoxygenNote: 7.3.2
 VignetteBuilder: knitr, rmarkdown
-X-schema.org-keywords: allometry, biomass-estimation, statistical-analysis, MCMC, Bayesian-inference, plant-traits, scaling-relationships, data-synthesis, uncertainty-quantification, model-fitting
+X-schema.org-keywords: allometry, biomass-estimation, statistical-analysis, MCMC, Bayesian-inference, plant-traits, scaling-relationships, data-synthesis
+
