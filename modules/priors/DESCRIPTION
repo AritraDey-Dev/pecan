@@ -26,3 +26,4 @@ Suggests:
 Encoding: UTF-8
 VignetteBuilder: knitr, rmarkdown
 RoxygenNote: 7.3.2
+X-schema.org-keywords: prior-estimation, data-analysis, statistical-modeling, Bayesian-inference, likelihood-methods, parameter-estimation, uncertainty-quantification, statistical-analysis, computational-statistics, Bayesian-statistics, likelihood-statistics, statistical-computing, Bayesian-computing, likelihood-computing, statistical-methods, Bayesian-methods, likelihood-methods, statistical-analysis, Bayesian-analysis, likelihood-analysis, statistical-modeling, Bayesian-modeling, likelihood-modeling, statistical-calibration, Bayesian-calibration, likelihood-calibration, statistical-optimization, Bayesian-optimization, likelihood-optimization, statistical-validation, Bayesian-validation, likelihood-validation

@@ -59,3 +59,4 @@ LazyData: FALSE
 Encoding: UTF-8
 RoxygenNote: 7.3.2
 Roxygen: list(markdown = TRUE)
+X-schema.org-keywords: data-assimilation, parameter-estimation, Bayesian-inference, MCMC, ecological-forecasting, uncertainty-quantification, model-calibration, hierarchical-modeling, emulator, parallel-computing, likelihood-estimation, prior-distributions, posterior-analysis, model-diagnostics, ensemble-analysis

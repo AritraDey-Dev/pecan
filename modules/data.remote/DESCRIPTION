@@ -54,3 +54,4 @@ LazyLoad: yes
 LazyData: FALSE
 Encoding: UTF-8
 RoxygenNote: 7.3.2
+X-schema.org-keywords: remote-sensing, satellite-data, MODIS, Landsat, data-extraction, spatial-data, geospatial-analysis, satellite-imagery, data-processing, data-download, data-standardization, quality-control, data-validation, spatial-analysis, temporal-analysis, data-integration, data-transformation, data-visualization, data-management, data-archiving, data-distribution, data-access, data-services, satellite-products, land-cover, vegetation-indices, phenology-data, biomass-data, climate-data, environmental-data, earth-observation, geospatial-data, remote-sensing-analysis, satellite-data-processing, remote-sensing-data, satellite-imagery-processing, remote-sensing-products, satellite-data-analysis, remote-sensing-tools, satellite-data-tools, remote-sensing-methods, satellite-data-methods, remote-sensing-techniques, satellite-data-techniques

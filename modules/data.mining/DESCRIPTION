@@ -21,3 +21,4 @@ LazyData: FALSE
 Collate:
 Encoding: UTF-8
 RoxygenNote: 7.3.2
+X-schema.org-keywords: data.mining, model-residuals, spectral-analysis, wavelet-analysis, time-series-analysis, pattern-detection, model-diagnostics, statistical-analysis, data-mining, model-evaluation, error-analysis, temporal-patterns, frequency-analysis, power-spectrum, model-structure, data-exploration, statistical-significance, model-comparison, residual-normalization, spectral-decomposition, temporal-scales, model-error, data-quality, statistical-methods, model-assessment, data-visualization, statistical-testing, model-validation, data-analysis, statistical-inference, model-diagnostics, data-processing, statistical-computing, model-analysis, data-mining, statistical-learning, model-exploration, data-exploration, statistical-modeling, model-investigation, data-investigation, statistical-analysis, model-research, data-research, statistical-research, model-study, data-study, statistical-study

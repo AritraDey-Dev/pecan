@@ -73,3 +73,4 @@ Copyright: Authors
 LazyData: true
 Encoding: UTF-8
 RoxygenNote: 7.3.2
+X-schema.org-keywords: land-surface-data, soil-properties, vegetation-data, land-cover, soil-texture, soil-carbon, soil-moisture, soil-thermal-properties, soil-hydraulic-properties, soil-chemistry, vegetation-structure, biomass-data, land-use, spatial-data, data-standardization, soil-depth-profile, soil-bulk-density, soil-organic-matter, soil-nutrients, soil-water-potential, soil-hydraulic-conductivity, soil-thermal-conductivity, soil-albedo, vegetation-biomass, vegetation-cover, vegetation-species, vegetation-phenology, land-cover-classification, spatial-interpolation, data-quality-control, data-format-conversion, soil-data-processing, vegetation-data-processing, land-cover-data-processing, spatial-data-processing, data-validation, data-transformation, data-integration, data-visualization, data-analysis, data-management, data-archiving, data-distribution, data-access, data-services

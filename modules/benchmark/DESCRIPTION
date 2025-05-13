@@ -51,3 +51,4 @@ LazyLoad: yes
 LazyData: FALSE
 Encoding: UTF-8
 RoxygenNote: 7.3.2
+X-schema.org-keywords: model-evaluation, statistical-metrics, performance-assessment, model-data-comparison, error-analysis, time-series-analysis, ensemble-analysis, visualization, RMSE, MAE, R2, correlation-analysis, residual-analysis, model-validation, benchmark-scores, model-diagnostics

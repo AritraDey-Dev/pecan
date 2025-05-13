@@ -66,3 +66,4 @@ License: BSD_3_clause + file LICENSE
 Copyright: Authors
 Encoding: UTF-8
 RoxygenNote: 7.3.2
+X-schema.org-keywords: sequential-data-assimilation, ensemble-kalman-filter, particle-filter, ecological-forecasting, state-estimation, uncertainty-quantification, multi-site-analysis, process-variance, observation-operator, ensemble-analysis, time-series-analysis, spatial-localization, model-data-fusion, parameter-uncertainty, forecast-verification
