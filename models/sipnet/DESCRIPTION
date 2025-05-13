@@ -31,3 +31,4 @@ License: BSD_3_clause + file LICENSE
 Copyright: Authors
 Encoding: UTF-8
 RoxygenNote: 7.3.2
+X-schema.org-keywords: SIPNET, carbon-cycle, nitrogen-cycle, soil-processes, vegetation-dynamics, photosynthesis, respiration, soil-moisture, evapotranspiration, snow-hydrology, leaf-area-index, biomass-allocation, litter-decomposition, soil-organic-matter

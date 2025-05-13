@@ -22,3 +22,4 @@ LazyLoad: yes
 LazyData: FALSE
 Encoding: UTF-8
 RoxygenNote: 7.3.2
+X-schema.org-keywords: CABLE, land-surface-model, biogeochemistry, energy-balance, water-balance, vegetation-dynamics, soil-processes, climate-vegetation-interactions

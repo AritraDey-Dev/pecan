@@ -31,3 +31,4 @@ LazyLoad: yes
 LazyData: FALSE
 Encoding: UTF-8
 RoxygenNote: 7.3.2
+X-schema.org-keywords: FATES, ecosystem-demography, vegetation-dynamics, carbon-cycle, biogeochemistry, soil-processes, climate-vegetation-interactions, forest-dynamics, fire-ecology, hydrology

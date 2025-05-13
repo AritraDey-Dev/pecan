@@ -29,3 +29,4 @@ LazyData: FALSE
 Encoding: UTF-8
 RoxygenNote: 7.3.2
 LinkingTo: Rcpp
+X-schema.org-keywords: LPJ-GUESS, vegetation-dynamics, carbon-cycle, nitrogen-cycle, soil-processes, land-use-change, crop-management, forest-dynamics, biogeochemistry, climate-vegetation-interactions, water-balance, phenology, biomass-allocation, disturbance-ecology

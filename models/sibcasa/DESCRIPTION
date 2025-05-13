@@ -25,3 +25,4 @@ Copyright: Authors
 LazyData: TRUE
 Encoding: UTF-8
 RoxygenNote: 7.3.2
+X-schema.org-keywords: SiBCASA, carbon-cycle, nitrogen-cycle, soil-processes, vegetation-dynamics, photosynthesis, respiration, soil-moisture, soil-temperature, biogeochemistry, climate-vegetation-interactions

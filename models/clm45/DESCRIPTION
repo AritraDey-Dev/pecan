@@ -24,3 +24,4 @@ LazyLoad: yes
 LazyData: FALSE
 Encoding: UTF-8
 RoxygenNote: 7.3.2
+X-schema.org-keywords: CLM45, land-surface-model, biogeochemistry, energy-balance, water-balance, vegetation-dynamics, soil-processes, climate-vegetation-interactions, carbon-cycle, nitrogen-cycle, hydrology, snow-processes

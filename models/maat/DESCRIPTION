@@ -28,3 +28,4 @@ LazyLoad: yes
 LazyData: FALSE
 Encoding: UTF-8
 RoxygenNote: 7.3.2
+X-schema.org-keywords: MAAT, leaf-photosynthesis, carbon-assimilation, stomatal-conductance, leaf-respiration, leaf-biochemistry, leaf-physiology, leaf-traits, leaf-nitrogen, leaf-temperature, leaf-water-relations, leaf-radiation, leaf-gas-exchange

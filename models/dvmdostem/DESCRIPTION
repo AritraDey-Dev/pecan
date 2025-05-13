@@ -27,3 +27,6 @@ LazyLoad: yes
 LazyData: FALSE
 Encoding: UTF-8
 RoxygenNote: 7.3.2
+X-schema.org-keywords: dvmdostem, vegetation-dynamics, carbon-cycle, nitrogen-cycle, soil-processes, biogeochemistry, ecosystem-model, climate-vegetation-interactions
+
+

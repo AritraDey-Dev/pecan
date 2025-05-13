@@ -40,3 +40,4 @@ Copyright: Energy Biosciences Institute, Authors
 Encoding: UTF-8
 VignetteBuilder: knitr, rmarkdown
 RoxygenNote: 7.3.2
+X-schema-keywords: BIOCRO, crop-growth, photosynthesis, biomass-allocation, phenology, C3-C4-plants, bioenergy-crops, agricultural-systems

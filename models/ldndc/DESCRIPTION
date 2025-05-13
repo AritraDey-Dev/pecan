@@ -26,3 +26,4 @@ LazyLoad: yes
 LazyData: FALSE
 Encoding: UTF-8
 RoxygenNote: 7.3.2
+X-schema.org-keywords: LDNDC, land-surface-model, carbon-cycle, nitrogen-cycle, soil-processes, vegetation-dynamics, biogeochemistry, climate-vegetation-interactions, soil-moisture, soil-temperature, decomposition

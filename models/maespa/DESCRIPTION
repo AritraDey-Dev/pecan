@@ -31,3 +31,5 @@ Copyright: Authors
 LazyData: FALSE
 Encoding: UTF-8
 RoxygenNote: 7.3.2
+X-schema.org-keywords: MAESPA, canopy-photosynthesis, radiation-transfer, carbon-assimilation, water-balance, soil-processes, vegetation-dynamics, leaf-physiology, stomatal-conductance, transpiration, energy-balance, climate-vegetation-interactions, ecosystem-fluxes
+
