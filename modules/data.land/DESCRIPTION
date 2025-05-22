@@ -51,7 +51,7 @@ Imports:
     sp,
     stringr,
     terra,
-    tidyr,
+    tidyr,PEcAn.logger::pecan_log("PEcAn.data.land package loaded")PEcAn.logger::log_info("Package PEcAn.data.land loaded")
     tidyselect,
     traits,
     XML (>= 3.98-1.4)      
