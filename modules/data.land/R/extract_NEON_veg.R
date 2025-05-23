@@ -53,15 +53,8 @@ extract_NEON_veg <- function(lon, lat, start_date, end_date, store_dir, neonsite
   
   # Convert input lat/lon to a terra vector point
   pt1 <- terra::vect(data.frame(x = lon, y = lat), crs = "EPSG:4326")
-  # Convert NEON site locations to terra vector points
-  pts2 <- terra::vect(data.frame(
-    x = neonsites$siteLongitude, 
-    y = neonsites$siteLatitude,
-    id = 1:nrow(neonsites)
-  ), crs = "EPSG:4326")
-  
-  # Calculate distances (returns distance in meters)
-  betyneondist <- terra::distance(pt1, pts2)
+  pts2 <- terra::vect(data.frame(x = neonsites$siteLongitude, y = neonsites$siteLatitude), crs = "EPSG:4326")
+  betyneondist <- as.numeric(terra::distance(pt1, pts2))
   mindist <- min(betyneondist)
   distloc <- match(mindist, betyneondist)
   lat <- neonsites$siteLatitude[distloc]
