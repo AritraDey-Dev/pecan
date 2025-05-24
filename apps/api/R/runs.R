@@ -237,7 +237,7 @@ getRunOutputFile <- function(req, run_id, filename, res){
 #' @author Tezan Sahu
 #* @get /<run_id>/graph/<year>/<y_var>
 #* @serializer contentType list(type='image/png')
-plotResults <- function(req, run_id, year, y_var, width, height = 600, res) {
+plotResults <- function(req, run_id, year, y_var, width = 800, height = 600, res) {
   x_var <- ifelse(!is.null(req$args$xvar), req$args$xvar, "time")
 
   # Get workflow_id for the run
