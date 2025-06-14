@@ -38,9 +38,22 @@ jobs:
         echo "UID=$(id -u)" >> .env
         echo "GID=$(id -g)" >> .env
         
-        docker compose up --wait -d postgres
+        # Start postgres and wait for it to be ready
+        docker compose up -d postgres
+        echo "Waiting for postgres to be ready..."
+        sleep 30  # Give postgres time to initialize
+        
+        # Initialize database
+        docker pull pecan/db
         docker run --rm --network pecan_pecan pecan/db
-        docker run --rm --network pecan_pecan --volume pecan_pecan:/data --env FQDN=docker pecan/data:develop
+        
+        # Create required BETY users
+        docker compose run --rm bety user guestuser guestuser "Guest User" guestuser@example.com 4 4
+        docker compose run --rm bety user carya illinois "Carya Demo User" carya@example.com 1 1
+        
+        # Load example data
+        docker pull pecan/data:develop
+        docker run -ti --rm --network pecan_pecan --volume pecan_pecan:/data --env FQDN=docker pecan/data:develop
         docker run --rm --network pecan_pecan --volume pecan_pecan:/data pecan/data:develop chown -R "$(id -u):$(id -g)" /data
         docker run --user="$(id -u)" --rm --network pecan_pecan --volume pecan_pecan:/data --env FQDN=docker pecan/data:develop        
         docker image rm pecan/db pecan/data:develop
