@@ -63,11 +63,15 @@ jobs:
         sleep 50
         docker ps
 
-    # - name: Add models
-    #   run: |
-    #     docker compose cp scripts/add.util.sh postgres:/tmp/add.util.sh
-    #     docker compose cp scripts/add.models.sh postgres:/tmp/add.models.sh
-    #     docker compose exec postgres /tmp/add.models.sh
+    - name: Verify SIPNET installation
+      run: |
+        docker compose exec sipnet ls -l /pecan/models/sipnet
+        docker compose exec sipnet which sipnet
+
+    - name: Check model output directory
+      run: |
+        docker compose exec executor ls -l /data/docker_stack_tests/sipnet/run
+        docker compose exec executor cat /data/docker_stack_tests/sipnet/run/99000000001/pecan.log
 
     - name: Run SIPNET
       run: |
