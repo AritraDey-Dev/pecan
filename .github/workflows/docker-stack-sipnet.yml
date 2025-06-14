@@ -52,7 +52,7 @@ jobs:
         docker run --rm --network pecan_pecan pecan/db
         docker run --rm --network pecan_pecan --volume pecan_pecan:/data --env FQDN=docker pecan/data:develop
         docker run --rm --network pecan_pecan --volume pecan_pecan:/data pecan/data:develop chown -R "$(id -u):$(id -g)" /data
-        docker image rm pecan/db:ci pecan/data:develop
+        docker image rm pecan/db pecan/data:develop
     
     - name: Run required containers
       run: |
