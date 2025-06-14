@@ -16,16 +16,6 @@ jobs:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
-    - name: Free Disk Space (Ubuntu)
-      uses: jlumbroso/free-disk-space@main
-      with:
-        tool-cache: false
-        android: true
-        dotnet: true
-        haskell: true
-        large-packages: true
-        docker-images: false
-        swap-storage: true
 
     - name: Checkout source code
       uses: actions/checkout@v4
@@ -63,7 +53,7 @@ jobs:
       run: |
         sleep 50
         docker ps
-        
+
     - name: Run SIPNET
       run: |
         docker compose exec --workdir /pecan/tests executor R CMD ../web/workflow.R --settings docker-ghaction.sipnet.xml
