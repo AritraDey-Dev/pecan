@@ -63,17 +63,7 @@ jobs:
       run: |
         sleep 50
         docker ps
-
-    - name: Verify SIPNET installation
-      run: |
-        docker compose exec sipnet ls -l /pecan/models/sipnet
-        docker compose exec sipnet which sipnet
-
-    - name: Check model output directory
-      run: |
-        docker compose exec executor ls -l /data/docker_stack_tests/sipnet/run
-        docker compose exec executor cat /data/docker_stack_tests/sipnet/run/99000000001/pecan.log
-
+        
     - name: Run SIPNET
       run: |
         docker compose exec --workdir /pecan/tests executor R CMD ../web/workflow.R --settings docker-ghaction.sipnet.xml
