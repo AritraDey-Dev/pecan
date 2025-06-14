@@ -16,6 +16,16 @@ jobs:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
+    - name: Free Disk Space (Ubuntu)
+      uses: jlumbroso/free-disk-space@main
+      with:
+        tool-cache: false
+        android: true
+        dotnet: true
+        haskell: true
+        large-packages: true
+        docker-images: false
+        swap-storage: true
 
     - name: Checkout source code
       uses: actions/checkout@v4
@@ -34,29 +44,15 @@ jobs:
       run: |
         cp docker/env.example .env
         echo "COMPOSE_PROJECT_NAME=pecan" >> .env
-        echo "PECAN_VERSION=develop" >> .env
+        echo "PECAN_VERSION=latest" >> .env
         echo "UID=$(id -u)" >> .env
         echo "GID=$(id -g)" >> .env
         
-        # Start postgres and wait for it to be ready
-        docker compose up -d postgres
-        echo "Waiting for postgres to be ready..."
-        sleep 30  # Give postgres time to initialize
-        
-        # Initialize database
-        docker pull pecan/db
-        docker run --rm --network pecan_pecan pecan/db
-        
-        # Create required BETY users
-        docker compose run --rm bety user guestuser guestuser "Guest User" guestuser@example.com 4 4
-        docker compose run --rm bety user carya illinois "Carya Demo User" carya@example.com 1 1
-        
-        # Load example data
-        docker pull pecan/data:develop
-        docker run -ti --rm --network pecan_pecan --volume pecan_pecan:/data --env FQDN=docker pecan/data:develop
+        docker compose up --wait -d postgres
+        docker run --rm --network pecan_pecan pecan/db:ci
+        docker run --rm --network pecan_pecan --volume pecan_pecan:/data --env FQDN=docker pecan/data:develop
         docker run --rm --network pecan_pecan --volume pecan_pecan:/data pecan/data:develop chown -R "$(id -u):$(id -g)" /data
-        docker run --user="$(id -u)" --rm --network pecan_pecan --volume pecan_pecan:/data --env FQDN=docker pecan/data:develop        
-        docker image rm pecan/db pecan/data:develop
+        docker image rm pecan/db:ci pecan/data:develop
     
     - name: Run required containers
       run: |
@@ -66,6 +62,12 @@ jobs:
       run: |
         sleep 50
         docker ps
+
+    # - name: Add models
+    #   run: |
+    #     docker compose cp scripts/add.util.sh postgres:/tmp/add.util.sh
+    #     docker compose cp scripts/add.models.sh postgres:/tmp/add.models.sh
+    #     docker compose exec postgres /tmp/add.models.sh
 
     - name: Run SIPNET
       run: |
