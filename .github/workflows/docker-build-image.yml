@@ -77,13 +77,14 @@ jobs:
         env:
           check_var: ${{ secrets.DOCKERHUB_USERNAME }}
           is_default_R: ${{ inputs.r-version == env.DEFAULT_R_VERSION }}
+          is_pr: ${{ github.event_name == 'pull_request' }}
         id: meta
         uses: docker/metadata-action@v5
         with:
           # list of Docker images to use as base name for tags
           images: |
             name=ghcr.io/${{ steps.name.outputs.repository }}/${{ steps.name.outputs.image_name }}
-            name=pecan/${{ steps.name.outputs.image_name }},enable=${{ env.check_var != null }}
+            name=pecan/${{ steps.name.outputs.image_name }},enable=${{ env.check_var != null && !env.is_pr }}
           # generate Docker tags based on the following events/attributes
           tags: |
             type=schedule
