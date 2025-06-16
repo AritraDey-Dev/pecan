@@ -16,6 +16,7 @@
 #'
 #' @export
 #' @importFrom rlang .data
+#' @importFrom terra vect distance
 #' @examples 
 #' start_date = as.Date("2020-01-01") 
 #' end_date = as.Date("2021-09-01")
@@ -50,7 +51,11 @@ extract_NEON_veg <- function(lon, lat, start_date, end_date, store_dir, neonsite
     neonsites <- neonstore::neon_sites(api = "https://data.neonscience.org/api/v0", .token = Sys.getenv("NEON_TOKEN"))
   }
   neonsites <- dplyr::select(neonsites, "siteCode", "siteLatitude", "siteLongitude") #select for relevant columns
-  betyneondist <- swfscMisc::distance(lat1 = lat, lon1 = lon, lat2 = neonsites$siteLatitude, lon2 = neonsites$siteLongitude)
+  site_point <- terra::vect(data.frame(x = lon, y = lat), crs = "EPSG:4326")
+  neon_points <- terra::vect(data.frame(x = neonsites$siteLongitude, y = neonsites$siteLatitude), crs = "EPSG:4326")
+  
+  # Calculate distances using terra
+  betyneondist <- terra::distance(site_point, neon_points)
   mindist <- min(betyneondist)
   distloc <- match(mindist, betyneondist)
   lat <- neonsites$siteLatitude[distloc]

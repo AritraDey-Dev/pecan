@@ -23,7 +23,6 @@ library(gstat)
 library(tidyr)
 library(neonstore)
 library(neonUtilities)
-library(swfscMisc)
 library(PEcAn.utils)
 library(maps)
 
