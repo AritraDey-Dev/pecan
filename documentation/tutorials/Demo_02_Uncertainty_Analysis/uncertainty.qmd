@@ -78,7 +78,7 @@ This section handles the step of loading the PEcAn settings.
 - Alternatively, for a sample or initial run, you can use the example `pecan.xml` file available at: `pecan/documentation/tutorials/Demo_1_Basic_Run/pecan.xml`.
 
 ```{r load-settings}
-settings_path <- here::here("/pecan/documentation/quarto/pecan.xml")
+settings_path <- here::here("/pecan/documentation/tutorials/Demo_02_Uncertainty_Analysis/pecan.xml")
 ```
 
 # 4. Prepare and Validate Settings
