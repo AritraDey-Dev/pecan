@@ -154,21 +154,69 @@ PEcAn.workflow::runModule_start_model_runs(settings)
 ```
 
 # 10. Ensemble and Sensitivity Analysis
-# This section runs ensemble and sensitivity analyses on the model output.
-# Ensemble analysis quantifies uncertainty in model predictions by running the model with different parameter samples.
-# Sensitivity analysis identifies which parameters most influence the model results.
 
-```{r run sensivitiy analysis}
-# After running model simulations, perform ensemble and sensitivity analyses to quantify output uncertainty and parameter influence
-# Run ensemble analysis: generates ensemble predictions and summary plots
+This section executes ensemble and sensitivity analyses to comprehensively assess model uncertainty and parameter importance.
+
+**Ensemble Analysis**: Quantifies uncertainty in model predictions by running multiple simulations with parameters sampled from their uncertainty distributions. This generates probability distributions of model outputs and confidence intervals.
+
+**Sensitivity Analysis**: Systematically varies individual parameters to assess their influence on model outputs. This identifies which parameters most strongly affect model predictions and helps prioritize parameter refinement efforts.
+
+```{r run-sensitivity-analysis}
+# Execute ensemble and sensitivity analyses to quantify uncertainty and parameter influence
+# First, retrieve results from all model runs
 runModule.get.results(settings)
+
+# Run ensemble analysis: generates ensemble predictions and uncertainty quantification
 runModule.run.ensemble.analysis(settings)
 
 # Run sensitivity analysis: generates variance decomposition plots and sensitivity metrics
 runModule.run.sensitivity.analysis(settings)
 ```
 
-# 11. Customizing Ensemble Analysis Parameters (Optional)
+# 11. Understanding PEcAn Uncertainty Analysis Outputs
+
+After running ensemble and sensitivity analyses, PEcAn generates several important outputs that help you understand model uncertainty and parameter sensitivity.
+
+## 11.1 Ensemble Analysis Outputs
+
+The ensemble analysis produces:
+
+- **`ensemble.Rdata`**: Contains `ensemble.output` object with model predictions for all ensemble members
+- **`ensemble.analysis.[RunID].[Variable].[StartYear].[EndYear].pdf`**: Histogram and boxplot of ensemble predictions
+- **`ensemble.ts.[RunID].[Variable].[StartYear].[EndYear].pdf`**: Time-series plot showing ensemble mean, median, and 95% confidence intervals
+
+## 11.2 Sensitivity Analysis Outputs
+
+The sensitivity analysis generates:
+
+- **`sensitivity.analysis.[RunID].[Variable].[StartYear].[EndYear].pdf`**: Raw data points from univariate analyses with spline fits
+- **`sensitivity.output.[RunID].[Variable].[StartYear].[EndYear].Rdata`**: Model outputs corresponding to parameter variations
+
+## 11.3 Uncertainty Analysis Outputs
+
+The uncertainty analysis produces:
+
+- **`variance.decomposition.[RunID].[Variable].[StartYear].[EndYear].pdf`**: Three-column analysis showing:
+  - Coefficient of variation (normalized posterior variance)
+  - Elasticity (normalized sensitivity) 
+  - Partial standard deviation of each parameter
+
+## 11.4 Interpreting the Results
+
+**Variance Decomposition Analysis:**
+- Parameters are sorted by their contribution to model output variability
+- Identify top-tier parameters for future constraint
+- Distinguish between parameters that are:
+  - Highly sensitive but low uncertainty
+  - Highly uncertain but low sensitivity  
+  - Both sensitive and uncertain (priority targets)
+
+**Parameter Prioritization:**
+- Focus on parameters that are both sensitive and uncertain
+- Consider measurement costs and feasibility
+- Balance parameter uncertainty vs. model sensitivity
+
+# 12. Customizing Ensemble Analysis Parameters (Optional)
 
 ## (Optional) Use this section only if you want to override the default ensemble analysis parameters. Skip if defaults are sufficient.
 > **Important:** If you modify the ensemble analysis parameters in this section, you must re-run sections 8, 9, and 10 to regenerate the model output with the new ensemble configuration.
@@ -185,7 +233,7 @@ settings$ensemble$samplingspace$parameters$method <- "halton"
 ```
 
 
-# 12. Customizing Sensitivity Analysis Parameters (Optional)
+# 13. Customizing Sensitivity Analysis Parameters (Optional)
 
 ## (Optional) Use this section only if you want to override the default sensitivity analysis parameters. Skip if defaults are sufficient.
 > **Important:** If you modify the sensitivity analysis parameters in this section, you must re-run sections 8, 9, and 10 to regenerate the model output with the new sensitivity analysis configuration.
@@ -200,7 +248,7 @@ settings$sensitivity.analysis$variable <- "NEE"
 
 
 
-# 13. Extract Model Results and Prepare for Analysis
+# 14. Extract Model Results and Prepare for Analysis
 
 After the model simulation completes, we need to extract the results and prepare them for analysis. This involves:
 
@@ -228,7 +276,7 @@ model_output <- PEcAn.utils::read.output(
 available_vars <- names(model_output)[!names(model_output) %in% c("posix", "time_bounds")]
 ```
 
-# 14. Display Available Model Variables
+# 15. Display Available Model Variables
 
 This section shows all the variables that are available in the model output. These variables represent different ecosystem processes and states that the model has simulated.
 
@@ -240,11 +288,11 @@ vars_df$Description[is.na(vars_df$Description)] <- "(No description available)"
 knitr::kable(vars_df, caption = "Model Output Variables and Descriptions")
 ```
 
-# 15. Visualize Model Results
+# 16. Visualize Model Results
 
 This section provides examples of how to create time series plots of different model variables. The examples cover various ecosystem processes including carbon fluxes, carbon pools, water variables, and structural variables like Leaf Area Index (LAI).
 
-## 15.1 Plot Carbon Fluxes
+## 16.1 Plot Carbon Fluxes
 
 ```{r plot-carbon-fluxes}
 # Plot Gross Primary Productivity (GPP) and Net Primary Productivity (NPP)
@@ -259,7 +307,7 @@ lines(model_output$posix, model_output$NPP, col = "blue")
 legend("topright", legend = c("GPP", "NPP"), col = c("green", "blue"), lty = 1)
 ```
 
-## 15.2 Plot Carbon Pools
+## 16.2 Plot Carbon Pools
 
 ```{r plot-carbon-pools}
 # Plot Total Live Biomass and Total Soil Carbon
@@ -274,7 +322,7 @@ lines(model_output$posix, model_output$TotSoilCarb, col = "brown")
 legend("topright", legend = c("Total Live Biomass", "Total Soil Carbon"), col = c("darkgreen", "brown"), lty = 1)
 ```
 
-## 15.3 Plot Water Variables
+## 16.3 Plot Water Variables
 
 ```{r plot-water-variables}
 # Plot Soil Moisture and Snow Water Equivalent
@@ -289,7 +337,7 @@ lines(model_output$posix, model_output$SWE, col = "lightblue")
 legend("topright", legend = c("Soil Moisture", "Snow Water Equivalent"), col = c("blue", "lightblue"), lty = 1)
 ```
 
-## 15.4 Plot LAI and Biomass
+## 16.4 Plot LAI and Biomass
 
 ```{r plot-lai-biomass}
 # Plot Leaf Area Index (LAI) and Above Ground Wood
@@ -304,7 +352,7 @@ lines(model_output$posix, model_output$AbvGrndWood, col = "brown")
 legend("topright", legend = c("LAI", "Above Ground Wood"), col = c("darkgreen", "brown"), lty = 1)
 ```
 
-# 16. Session Information
+# 17. Session Information
 
 Print R session information for reproducibility.
 
