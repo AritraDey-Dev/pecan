@@ -223,7 +223,7 @@ The uncertainty analysis produces:
 
 ```{r customize-ensemble}
 # Set the number of ensemble members (model runs)
-settings$ensemble$size <- 10
+settings$ensemble$size <- 50
 
 # Specify the variable to be analyzed in the ensemble
 settings$ensemble$variable <- "NEE"
