@@ -1,5 +1,5 @@
 ---
-title: "Running Ecosystem Simulations Using PEcAn"
+title: "Uncertainty Analysis Using PEcAn"
 author: "Aritra Dey"
 format:
   pdf:
@@ -47,7 +47,7 @@ These analyses are essential for understanding model behavior, quantifying uncer
 
 Before running this notebook, make sure you have:
 
-- A valid `pecan.xml` configuration file or use the example provided: `pecan/documentation/tutorials/Demo_1_Basic_Run/pecan.xml`
+- A valid `pecan.xml` configuration file or use the example provided: `pecan/documentation/tutorials/Demo_02_Uncertainty_Analysis/pecan.xml`
 
 ## 1.5 How to Use This Notebook
 
