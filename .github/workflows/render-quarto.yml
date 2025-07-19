@@ -50,6 +50,7 @@ jobs:
       - name: Install PEcAn and dependencies
         run: |
           dir.create(Sys.getenv("R_LIBS_USER"), recursive = TRUE, showWarnings = FALSE)
+          .libPaths(Sys.getenv("R_LIBS_USER"))
           options(repos = c(
             pecanproject = 'https://pecanproject.r-universe.dev',
             CRAN = 'https://cloud.r-project.org'
@@ -58,5 +59,8 @@ jobs:
         shell: Rscript {0}
 
       - name: Render the Quarto notebook to PDF
+        env:
+          R_LIBS_USER: ~/.local/R/library
         run: |
+          Rscript -e '.libPaths(Sys.getenv("R_LIBS_USER"))'
           quarto render documentation/tutorials/Demo_1_Basic_Run/run_pecan.qmd --to pdf
