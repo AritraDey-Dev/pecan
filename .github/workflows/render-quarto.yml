@@ -1,3 +1,13 @@
+name: Render Quarto PDF
+
+on:
+  push:
+    paths:
+      - '**.qmd'
+      - '**/DESCRIPTION'
+      - .github/workflows/render-quarto.yml
+  workflow_dispatch:
+
 jobs:
   render:
     runs-on: ubuntu-latest
@@ -37,7 +47,7 @@ jobs:
         with:
           version: '1.8.17'
 
-      - name: Install PEcAn and R dependencies
+      - name: Install PEcAn and dependencies
         run: |
           dir.create(Sys.getenv("R_LIBS_USER"), recursive = TRUE, showWarnings = FALSE)
           options(repos = c(
