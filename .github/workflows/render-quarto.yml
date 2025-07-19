@@ -22,7 +22,7 @@ jobs:
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
         with:
-          version: 'v1.8.17'
+          version: '1.8.17'
 
       - name: Install PEcAn and R dependencies
         run: |
