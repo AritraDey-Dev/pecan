@@ -12,12 +12,23 @@ jobs:
   render:
     runs-on: ubuntu-latest
 
+    env:
+      R_LIBS_USER: ~/.local/R/library
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Set up R
         uses: r-lib/actions/setup-r@v2
+
+      - name: Cache R packages
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.R_LIBS_USER }}
+          key: r-pkgs-${{ runner.os }}-${{ hashFiles('**/DESCRIPTION') }}
+          restore-keys: |
+            r-pkgs-${{ runner.os }}-
 
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
@@ -26,6 +37,7 @@ jobs:
 
       - name: Install PEcAn and R dependencies
         run: |
+          dir.create(Sys.getenv("R_LIBS_USER"), recursive = TRUE, showWarnings = FALSE)
           options(repos = c(
             pecanproject = 'https://pecanproject.r-universe.dev',
             CRAN = 'https://cloud.r-project.org'
