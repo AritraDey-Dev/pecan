@@ -2,7 +2,6 @@ name: Render Quarto PDF
 
 on:
   push:
-  pull_request:
   workflow_dispatch:
 
 jobs:
