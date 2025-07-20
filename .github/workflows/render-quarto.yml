@@ -3,7 +3,7 @@ name: Render Quarto PDF
 on:
   push:
     paths:
-      - '**.qmd'
+      - 'documentation/tutorials/Demo_1_Basic_Run/run_pecan.qmd'
       - '**/DESCRIPTION'
       - .github/workflows/render-quarto.yml
   workflow_dispatch:
