@@ -46,7 +46,7 @@ jobs:
       - name: Cache R packages
         uses: actions/cache@v4
         with:
-          path: ${{ env.R_LIBS_USER }}
+          path: ~/.local/R/library
           key: r-pkgs-${{ runner.os }}-${{ hashFiles('**/DESCRIPTION') }}
           restore-keys: |
             r-pkgs-${{ runner.os }}-
@@ -58,9 +58,8 @@ jobs:
 
       - name: Install PEcAn and dependencies
         run: |
-          set -e
-          dir.create(Sys.getenv("R_LIBS_USER"), recursive = TRUE, showWarnings = FALSE)
-          .libPaths(Sys.getenv("R_LIBS_USER"))
+          dir.create("~/.local/R/library", recursive = TRUE, showWarnings = FALSE)
+          .libPaths("~/.local/R/library")
           print(.libPaths())
           install.packages('PEcAn.all', repos = c('https://pecanproject.r-universe.dev', 'https://cloud.r-project.org'))
           install.packages(c("here", "lubridate", "fs", "dplyr", "knitr"))
@@ -71,5 +70,5 @@ jobs:
         env:
           R_LIBS_USER: ~/.local/R/library
         run: |
-          Rscript -e '.libPaths(Sys.getenv("R_LIBS_USER"))'
+          Rscript -e '.libPaths("~/.local/R/library")'
           quarto render documentation/tutorials/Demo_1_Basic_Run/run_pecan.qmd --to pdf
