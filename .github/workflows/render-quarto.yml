@@ -8,12 +8,23 @@ on:
 jobs:
   render:
     runs-on: ubuntu-latest
-    container:
-      image: pecan/base:develop
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            libgdal-dev libproj-dev libgeos-dev libudunits2-dev libnetcdf-dev \
+            libssl-dev libcurl4-openssl-dev libxml2-dev \
+            git make
+
+      - name: Install PEcAn R packages
+        run: |
+          make install Ncpus=8
 
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
