@@ -27,7 +27,7 @@ jobs:
       - name: Check R code style with styler
         run: |
           Rscript -e 'if (!requireNamespace("styler", quietly = TRUE)) install.packages("styler")'
-          Rscript -e 'unstyled <- styler::style_file("documentation/tutorials/Demo_1_Basic_Run/run_pecan.qmd", dry = "on"); if (length(unstyled$changed) > 0) { print(unstyled); stop("run_pecan.qmd is not styled. Please run styler::style_file() locally and commit the changes.") } else { cat("run_pecan.qmd is styled.\n") }'
+          Rscript -e 'unstyled <- styler::style_file("documentation/tutorials/Demo_1_Basic_Run/run_pecan.qmd", dry = "on"); print(unstyled); if (any(unstyled$changed)) { stop("run_pecan.qmd is not styled. Please run styler::style_file() locally and commit the changes.") } else { cat("run_pecan.qmd is styled.\n") }'
 
       - name: Render the Quarto notebook to PDF
         run: |
