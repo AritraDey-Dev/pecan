@@ -76,6 +76,7 @@ source(
 )
 ```
 
+
 > Note: You can find the most recent version of the SIPNET binary at: [SIPNET GitHub Releases](https://github.com/PecanProject/sipnet/releases), but this notebook is designed to work with SIPNET v1.3.0.
 
 # 3. Load PEcAn Packages
