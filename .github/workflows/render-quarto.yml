@@ -2,10 +2,6 @@ name: Render Quarto PDF
 
 on:
   push:
-    paths:
-      - 'documentation/tutorials/Demo_1_Basic_Run/run_pecan.qmd'
-      - '**/DESCRIPTION'
-      - .github/workflows/render-quarto.yml
   workflow_dispatch:
 
 jobs:
@@ -22,6 +18,10 @@ jobs:
         uses: quarto-dev/quarto-actions/setup@v2
         with:
           version: '1.8.17'
+
+      - name: Install TinyTeX
+        run: |
+          quarto install tinytex
 
       - name: Render the Quarto notebook to PDF
         run: |
