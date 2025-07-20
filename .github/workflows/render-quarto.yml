@@ -28,7 +28,16 @@ jobs:
 
       - name: Check R code style with styler
         run: |
-          docker run --rm -v ${{ github.workspace }}:/work pecan-base-ci:latest bash -c "Rscript -e 'if (!requireNamespace(\"styler\", quietly = TRUE)) install.packages(\"styler\"); unstyled <- styler::style_file(\"/work/documentation/tutorials/Demo_1_Basic_Run/run_pecan.qmd\"); if (any(unstyled$changed)) { print(unstyled); stop(\"run_pecan.qmd is not styled. Please run styler::style_file() locally and commit the changes.\") } else { cat(\"run_pecan.qmd is styled.\\n\") }'"
+          docker run --rm -v ${{ github.workspace }}:/work pecan-base-ci:latest bash -c "Rscript -e '
+            if (!requireNamespace(\"styler\", quietly = TRUE)) install.packages(\"styler\");
+            unstyled <- styler::style_file(\"/work/documentation/tutorials/Demo_1_Basic_Run/run_pecan.qmd\");
+            if (is.data.frame(unstyled) && \"changed\" %in% names(unstyled) && any(unstyled$changed == TRUE)) {
+              print(unstyled);
+              stop(\"run_pecan.qmd is not styled. Please run styler::style_file() locally and commit the changes.\")
+            } else {
+              cat(\"run_pecan.qmd is styled.\\n\")
+            }
+          '"
 
       - name: Render the Quarto notebook to PDF
         run: |
