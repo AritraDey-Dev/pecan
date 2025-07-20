@@ -11,64 +11,18 @@ on:
 jobs:
   render:
     runs-on: ubuntu-latest
-
-    env:
-      R_LIBS_USER: ~/.local/R/library
+    container:
+      image: pecan/base:develop-R4.4
 
     steps:
-      - name: Free up disk space
-        run: |
-          echo "Before cleanup:"
-          df -h
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /opt/hostedtoolcache/CodeQL
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/hostedtoolcache/go
-          echo "After cleanup:"
-          df -h
-
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Install system dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libgdal-dev libproj-dev libgeos-dev libudunits2-dev libnetcdf-dev
-
-      - name: Set up R
-        uses: r-lib/actions/setup-r@v2
-
-      - name: Print R version and library paths
-        run: |
-          Rscript -e 'print(R.version.string); print(.libPaths())'
-
-      - name: Cache R packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.local/R/library
-          key: r-pkgs-${{ runner.os }}-${{ hashFiles('**/DESCRIPTION') }}
-          restore-keys: |
-            r-pkgs-${{ runner.os }}-
 
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
         with:
           version: '1.8.17'
 
-      - name: Install PEcAn and dependencies
-        run: |
-          dir.create("~/.local/R/library", recursive = TRUE, showWarnings = FALSE)
-          .libPaths("~/.local/R/library")
-          print(.libPaths())
-          install.packages('PEcAn.all', repos = c('https://pecanproject.r-universe.dev', 'https://cloud.r-project.org'), Ncpus = 20)
-          install.packages(c("here", "lubridate", "fs", "dplyr", "knitr"), Ncpus = 20)
-          library(PEcAn.all) # Fail fast if not installed
-        shell: Rscript {0}
-
       - name: Render the Quarto notebook to PDF
-        env:
-          R_LIBS_USER: ~/.local/R/library
         run: |
-          Rscript -e '.libPaths("~/.local/R/library")'
           quarto render documentation/tutorials/Demo_1_Basic_Run/run_pecan.qmd --to pdf
