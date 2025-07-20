@@ -61,8 +61,8 @@ jobs:
           dir.create("~/.local/R/library", recursive = TRUE, showWarnings = FALSE)
           .libPaths("~/.local/R/library")
           print(.libPaths())
-          install.packages('PEcAn.all', repos = c('https://pecanproject.r-universe.dev', 'https://cloud.r-project.org'))
-          install.packages(c("here", "lubridate", "fs", "dplyr", "knitr"))
+          install.packages('PEcAn.all', repos = c('https://pecanproject.r-universe.dev', 'https://cloud.r-project.org'), Ncpus = 20)
+          install.packages(c("here", "lubridate", "fs", "dplyr", "knitr"), Ncpus = 20)
           library(PEcAn.all) # Fail fast if not installed
         shell: Rscript {0}
 
