@@ -184,7 +184,7 @@ This step generates the model-specific configuration files that will be used to 
 
 ```{r write-configs}
 settings$database <- NULL # Disable database operations for this demo
-settings <- PEcAn.workflow::runModule.run.write.configs(settings,input_design = NULL)
+settings <- PEcAn.workflow::runModule.run.write.configs(settings, input_design = NULL)
 ```
 
 # 10. Run Model Simulations and Fetch Results
