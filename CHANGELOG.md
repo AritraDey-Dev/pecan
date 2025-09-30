@@ -56,6 +56,23 @@ section for the next release.
 - Added automated pkgdown documentation for all PEcAn packages (@divine7022, #3482):
   - Compiled pages are live at https://pecanproject.github.io/package-documentation and inside Docker at `pecan.localhost/pkgdocs/`, and these are automatically updated each time a PR to the source packages is merged.
   - You can compile all pkgdown pages locally at any time with `make pkgdocs`.
+- Included all relevant carbon pools (`ROOT_BIOMASS`, `AG_BIOMASS`, `SOIL_STOCK`, `LIT_BIOMASS`) in BADM-based IC extraction; excluded non-pool variables like `SOIL_CHEM`.
+- Added explicit support for `LIT_BIOMASS` to fully utilize **BADM** biomass capabilities.
+- Added `test-IC_BADM_Utilities.R` to validate BADM initial condition extraction and processing
+- The ERA5 NC extraction function can now handle multi-site instead of one.
+- Added function for merging images from the same tiling system (MODIS, GLANCE, ICESat-2, HLS, etc.).
+- Added function for converting images towards the GDAL-supported formats (H5, NetCDF, HDF4, GeoTIFF, etc .).
+- `extract.nc.ERA5()` and `met2CF.ERA5` now supports both ensemble and reanalysis data processing .
+
+- Initial Quarto notebook `run_pecan.qmd` to run PEcAn Demo 1 workflow from a pre-configured `pecan.xml` file, enabling notebook-based model runs, analysis, and visualization.[#3531](https://github.com/PecanProject/pecan/pull/3531)
+ - Directory structure for PEcAn Quarto notebooks under `pecan/documentation/tutorials/Demo_1_Basic_Run`
+ - Support for inspecting and plotting NetCDF output variables within the notebook workflow.
+- New Quarto notebook tutorial for PEcAn uncertainty analysis (`documentation/tutorials/Demo_02_Uncertainty_Analysis/uncertainty.qmd`) (#3570)
+  - Complete workflow demonstration for ensemble and sensitivity analysis using PEcAn's programmatic interface
+  - Parameter customization sections for ensemble size, sampling methods, and sensitivity quantiles
+  - Comprehensive output interpretation guide explaining variance decomposition and parameter prioritization
+  - Model result visualization with run ID identification and ensemble analysis capabilities
+  - Session information for reproducibility and clear documentation of PEcAn's uncertainty analysis outputs
 
 ### Fixed
 - api to correctly use x_var from request in plotResults #3528
