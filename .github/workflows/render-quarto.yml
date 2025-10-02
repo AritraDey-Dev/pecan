@@ -33,7 +33,7 @@ jobs:
 
       - name: Render the Quarto notebook to PDF
         run: |
-          docker run --rm -v ${{ github.workspace }}:/work coderaritra/pecan-base-ci:latest bash -c "quarto render /work/documentation/tutorials/Demo_1_Basic_Run/run_pecan.qmd --to pdf"
+          docker run --rm -v ${{ github.workspace }}:/work coderaritra/pecan-base-ci:latest bash -c "quarto install tinytex && quarto render /work/documentation/tutorials/Demo_1_Basic_Run/run_pecan.qmd --to pdf"
 
       - name: Upload PDF artifact
         uses: actions/upload-artifact@v4
