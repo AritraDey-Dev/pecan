@@ -31,12 +31,22 @@ jobs:
             }
           '"
 
-      - name: Render the Quarto notebook to PDF
+      - name: Render the Basic Run notebook to PDF
         run: |
           docker run --rm -v ${{ github.workspace }}:/work coderaritra/pecan-base-ci:latest bash -c "quarto install tinytex && quarto render /work/documentation/tutorials/Demo_1_Basic_Run/run_pecan.qmd --to pdf"
 
-      - name: Upload PDF artifact
+      - name: Upload Basic Run PDF artifact
         uses: actions/upload-artifact@v4
         with:
           name: pecan-run-demo
           path: documentation/tutorials/Demo_1_Basic_Run/run_pecan.pdf
+
+      - name: Render the Uncertainty notebook to PDF
+        run: |
+          docker run --rm -v ${{ github.workspace }}:/work coderaritra/pecan-base-ci:latest bash -c "quarto render /work/documentation/tutorials/Demo_02_Uncertainty_Analysis/uncertainty.qmd --to pdf"
+
+      - name: Upload Uncertainty PDF artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pecan-uncertainty-demo
+          path: documentation/tutorials/Demo_02_Uncertainty_Analysis/uncertainty.pdf
