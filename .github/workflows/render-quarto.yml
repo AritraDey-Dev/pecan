@@ -39,9 +39,13 @@ jobs:
             }
           '"
 
-      - name: Render the Quarto notebooks to HTML
+      - name: Render Demo 1 notebook to HTML
         run: |
           docker run --rm -v ${{ github.workspace }}:/work pecan-base-ci:latest bash -c "
             quarto render /work/documentation/tutorials/Demo_1_Basic_Run/run_pecan.qmd --to html
+          "
+      - name: Render Demo 2 notebook to HTML
+        run: |
+          docker run --rm -v ${{ github.workspace }}:/work pecan-base-ci:latest bash -c "
             quarto render /work/documentation/tutorials/Demo_02_Uncertainty_Analysis/uncertainty.qmd --to html
           "
