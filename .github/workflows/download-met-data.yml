@@ -1,5 +1,9 @@
 name : Test Data Download
 on :
+  # run on every push
+  push:
+    branches:
+      - "*"
   # allow manual triggering
   workflow_dispatch:
 
