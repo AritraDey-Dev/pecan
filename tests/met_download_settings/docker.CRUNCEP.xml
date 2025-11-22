@@ -6,7 +6,7 @@
       <driver>PostgreSQL</driver>
       <user>bety</user>
       <password>bety</password>
-      <host>localhost</host>
+      <host>postgres</host>
       <dbname>bety</dbname>
       <write>FALSE</write>
     </bety>
