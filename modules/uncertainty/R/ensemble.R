@@ -148,8 +148,8 @@ get.ensemble.samples <- function( ensemble.size, pft.samples, env.samples,
           same.i <- floor(randtoolbox::torus(ensemble.size) * NROW(pft.samples[[pft.i]][[1]]))+1
         } else if (method == "lhc") {
           same.i <- floor(c(PEcAn.emulator::lhc(t(matrix(0:1, ncol = 1, nrow = 2)), ensemble.size) * NROW(pft.samples[[pft.i]][[1]])))+1
-        }      PEcAn.logger::logger.info(paste("Sampling for method:", method, "NROW:", NROW(pft.samples[[pft.i]][[1]])))
-      if (method == "uniform") {
+        } else if (method == "uniform") {
+          PEcAn.logger::logger.info(paste("Sampling for method:", method, "NROW:", NROW(pft.samples[[pft.i]][[1]])))
         if (NROW(pft.samples[[pft.i]][[1]]) > 0) {
           same.i <- sample.int(NROW(pft.samples[[pft.i]][[1]]), ensemble.size)
         } else {
