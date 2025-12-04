@@ -1,4 +1,4 @@
-##' Reads output from model ensemble
+u##' Reads output from model ensemble
 ##'
 ##' Reads output for an ensemble of length specified by \code{ensemble.size} and bounded by \code{start.year} 
 ##' and \code{end.year}
@@ -139,7 +139,7 @@ get.ensemble.samples <- function( ensemble.size, pft.samples, env.samples,
       sampled.indices[[pft.i]] <- matrix(nrow = ensemble.size, ncol = length(pft.samples[[pft.i]]))
       
       # meaning we want to keep MCMC samples together
-      if(length(pft.samples[[pft.i]])>0 & !is.null(param.names) & NROW(pft.samples[[pft.i]][[1]]) > 0){ 
+      if(length(pft.samples[[pft.i]])>0 && !is.null(param.names) && NROW(pft.samples[[pft.i]][[1]]) > 0){ 
         if (method == "halton") {
           same.i <- floor(randtoolbox::halton(ensemble.size) * NROW(pft.samples[[pft.i]][[1]]))+1
         } else if (method == "sobol") {
@@ -571,15 +571,19 @@ input.ens.gen <- function(settings, ensemble_size, input, method = "sampling", p
     samples$ids <- parent_ids$ids
     out.of.sample.size <- length(samples$ids[samples$ids > length(input_path)])
     #sample for those that our outside the param size - forexample, parent id may send id number 200 but we have only100 sample for param
-    samples$ids[samples$ids %in% out.of.sample.size] <- sample(
-      seq_along(input_path),
-      out.of.sample.size,
-      replace = TRUE)
+    if (length(input_path) > 0) {
+      samples$ids[samples$ids %in% out.of.sample.size] <- sample(
+        seq_along(input_path),
+        out.of.sample.size,
+        replace = TRUE)
+    }
   } else if (tolower(method) == "sampling") {
-    samples$ids <- sample(
-      seq_along(input_path),
-      ensemble_size,
-      replace = TRUE)
+    if (length(input_path) > 0) {
+      samples$ids <- sample(
+        seq_along(input_path),
+        ensemble_size,
+        replace = TRUE)
+    }
   } else if (tolower(method) == "looping") {
     samples$ids <- rep_len(
       seq_along(input_path),
