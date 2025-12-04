@@ -130,6 +130,7 @@ run.meta.analysis.pft <- function(pft, iterations, random = TRUE, threshold = 1.
   
   ### Save the meta.analysis output
   save(trait.mcmc, file = file.path(pft$outdir, "trait.mcmc.Rdata"))
+  PEcAn.logger::logger.info("Saved trait.mcmc.Rdata. Calling approx.posterior...")
   
   post.distns <- approx.posterior(trait.mcmc, prior_env$prior.distns, jagged.data, pft$outdir)
   dist_MA_path <- file.path(pft$outdir, "post.distns.MA.Rdata")
