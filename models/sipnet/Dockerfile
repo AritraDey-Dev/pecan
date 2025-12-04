@@ -8,14 +8,19 @@ ARG PARENT_IMAGE="pecan/models"
 FROM ${PARENT_IMAGE}:${IMAGE_VERSION} AS model-binary
 
 # Some variables that can be used to set control the docker build
-ARG MODEL_VERSION=git
+ARG MODEL_VERSION=v1.3.0
 
 # download, unzip and build sipnet
 WORKDIR /src
-RUN git clone https://github.com/PecanProject/sipnet.git \
-    && cd sipnet \
-    && if [ "${MODEL_VERSION}" != "git" ]; then git checkout ${MODEL_VERSION}; fi \
-    && make sipnet
+RUN if [ "${MODEL_VERSION}" = "git" ]; then \
+      git clone https://github.com/PecanProject/sipnet.git \
+      && cd sipnet \
+      && make sipnet; \
+    else \
+      mkdir sipnet \
+      && curl -L -o sipnet/sipnet https://github.com/PecanProject/sipnet/releases/download/${MODEL_VERSION}/sipnet-linux-${MODEL_VERSION} \
+      && chmod +x sipnet/sipnet; \
+    fi
 
 ########################################################################
 
@@ -41,7 +46,7 @@ FROM ${PARENT_IMAGE}:${IMAGE_VERSION}
 # ----------------------------------------------------------------------
 
 # Some variables that can be used to set control the docker build
-ARG MODEL_VERSION=git
+ARG MODEL_VERSION=v1.3.0
 
 # Setup model_info file
 COPY model_info.json /work/model.json

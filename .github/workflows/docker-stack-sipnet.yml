@@ -52,6 +52,8 @@ jobs:
         # Build images locally to include changes
         docker build --tag pecan/base:develop --build-arg IMAGE_VERSION=develop --build-arg PARENT_IMAGE=pecan/depends --file docker/base/Dockerfile .
         docker build --tag pecan/executor:develop --build-arg IMAGE_VERSION=develop --build-arg PARENT_IMAGE=pecan/base docker/executor
+        docker build --tag pecan/models:develop --build-arg IMAGE_VERSION=develop --build-arg PARENT_IMAGE=pecan/base docker/models
+        docker build --tag pecan/model-sipnet-git:develop --build-arg IMAGE_VERSION=develop --build-arg MODEL_VERSION=v1.3.0 models/sipnet
         
         docker compose up --wait -d postgres
         docker run --rm --network pecan_pecan pecan/db:ci

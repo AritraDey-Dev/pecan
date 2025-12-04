@@ -139,7 +139,7 @@ get.ensemble.samples <- function( ensemble.size, pft.samples, env.samples,
       sampled.indices[[pft.i]] <- matrix(nrow = ensemble.size, ncol = length(pft.samples[[pft.i]]))
       
       # meaning we want to keep MCMC samples together
-      if(length(pft.samples[[pft.i]])>0 & !is.null(param.names)){ 
+      if(length(pft.samples[[pft.i]])>0 & !is.null(param.names) & length(pft.samples[[pft.i]][[1]]) > 0){ 
         if (method == "halton") {
           same.i <- floor(randtoolbox::halton(ensemble.size) * length(pft.samples[[pft.i]][[1]]))+1
         } else if (method == "sobol") {
