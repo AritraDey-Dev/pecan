@@ -12,15 +12,9 @@ ARG MODEL_VERSION=v1.3.0
 
 # download, unzip and build sipnet
 WORKDIR /src
-RUN if [ "${MODEL_VERSION}" = "git" ]; then \
-      git clone https://github.com/PecanProject/sipnet.git \
-      && cd sipnet \
-      && make sipnet; \
-    else \
-      mkdir sipnet \
+RUN mkdir sipnet \
       && curl -L -o sipnet/sipnet https://github.com/PecanProject/sipnet/releases/download/${MODEL_VERSION}/sipnet-linux-${MODEL_VERSION} \
-      && chmod +x sipnet/sipnet; \
-    fi
+      && chmod +x sipnet/sipnet
 
 ########################################################################
 
