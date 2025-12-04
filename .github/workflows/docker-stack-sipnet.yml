@@ -1,5 +1,5 @@
-name : Docker Stack Model Test
 on :
+  push:
   pull_request:
 
   # allow manual triggering
@@ -47,6 +47,11 @@ jobs:
         echo "PECAN_VERSION=develop" >> .env
         echo "UID=$(id -u)" >> .env
         echo "GID=$(id -g)" >> .env
+        echo "GID=$(id -g)" >> .env
+        
+        # Build images locally to include changes
+        docker build --tag pecan/base:develop --build-arg IMAGE_VERSION=develop --build-arg PARENT_IMAGE=pecan/depends --file docker/base/Dockerfile .
+        docker build --tag pecan/executor:develop --build-arg IMAGE_VERSION=develop --build-arg PARENT_IMAGE=pecan/base docker/executor
         
         docker compose up --wait -d postgres
         docker run --rm --network pecan_pecan pecan/db:ci
