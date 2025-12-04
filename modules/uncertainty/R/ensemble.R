@@ -139,20 +139,20 @@ get.ensemble.samples <- function( ensemble.size, pft.samples, env.samples,
       sampled.indices[[pft.i]] <- matrix(nrow = ensemble.size, ncol = length(pft.samples[[pft.i]]))
       
       # meaning we want to keep MCMC samples together
-      if(length(pft.samples[[pft.i]])>0 & !is.null(param.names)){ 
+      if(length(pft.samples[[pft.i]])>0 & !is.null(param.names) & NROW(pft.samples[[pft.i]][[1]]) > 0){ 
         if (method == "halton") {
-          same.i <- floor(randtoolbox::halton(ensemble.size) * length(pft.samples[[pft.i]][[1]]))+1
+          same.i <- floor(randtoolbox::halton(ensemble.size) * NROW(pft.samples[[pft.i]][[1]]))+1
         } else if (method == "sobol") {
-          same.i <- floor(randtoolbox::sobol(ensemble.size, scrambling = 3) * length(pft.samples[[pft.i]][[1]]))+1
+          same.i <- floor(randtoolbox::sobol(ensemble.size, scrambling = 3) * NROW(pft.samples[[pft.i]][[1]]))+1
         } else if (method == "torus") {
-          same.i <- floor(randtoolbox::torus(ensemble.size) * length(pft.samples[[pft.i]][[1]]))+1
+          same.i <- floor(randtoolbox::torus(ensemble.size) * NROW(pft.samples[[pft.i]][[1]]))+1
         } else if (method == "lhc") {
-          same.i <- floor(c(PEcAn.emulator::lhc(t(matrix(0:1, ncol = 1, nrow = 2)), ensemble.size) * length(pft.samples[[pft.i]][[1]])))+1
+          same.i <- floor(c(PEcAn.emulator::lhc(t(matrix(0:1, ncol = 1, nrow = 2)), ensemble.size) * NROW(pft.samples[[pft.i]][[1]])))+1
         } else if (method == "uniform") {
-          same.i <- sample.int(length(pft.samples[[pft.i]][[1]]), ensemble.size)
+          same.i <- sample.int(NROW(pft.samples[[pft.i]][[1]]), ensemble.size)
         } else if (method == "random") {
             PEcAn.logger::logger.info("Using random row sampling for MCMC draws")
-           same.i <- sample(nrow(pft.samples[[pft.i]][[1]]), ensemble.size, replace = TRUE)
+           same.i <- sample(NROW(pft.samples[[pft.i]][[1]]), ensemble.size, replace = TRUE)
         }
         else {
           PEcAn.logger::logger.error("Sampling method %s is not recognized", method)
