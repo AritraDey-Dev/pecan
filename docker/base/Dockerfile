@@ -27,7 +27,7 @@ COPY models   /pecan/models/
 #   (e.g. basgra.so)
 RUN cd /pecan \
     && make clean \
-    && make \
+    && make install \
     && rm -rf /tmp/downloaded_packages
 
 # COPY WORKFLOW
