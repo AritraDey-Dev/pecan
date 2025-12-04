@@ -1,4 +1,4 @@
-u##' Reads output from model ensemble
+##' Reads output from model ensemble
 ##'
 ##' Reads output for an ensemble of length specified by \code{ensemble.size} and bounded by \code{start.year} 
 ##' and \code{end.year}
