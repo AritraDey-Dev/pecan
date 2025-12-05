@@ -490,8 +490,12 @@ convert_input <-
   machine.info <- get_machine_info(host, input.args = input.args, input.id = input.id, con = con)
 
   if (any(sapply(machine.info, is.null))) {
-    PEcAn.logger::logger.error("failed lookup of inputs or dbfiles")
-    return(NULL)  
+    if (is.null(input.id) || is.na(input.id)) {
+      # This is expected for raw downloads where input.id is not yet established
+    } else {
+      PEcAn.logger::logger.error("failed lookup of inputs or dbfiles")
+      return(NULL)
+    }
   }
   machine <- machine.info$machine
   input <- machine.info$input
