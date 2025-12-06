@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<pecan>
+  <outdir>/data/output</outdir>
+  <database>
+    <bety>
+      <user>bety</user>
+      <password>bety</password>
+      <host>postgres</host>
+      <port>5432</port>
+      <dbname>bety</dbname>
+      <driver>PostgreSQL</driver>
+      <write>true</write>
+    </bety>
+    <dbfiles>/data/dbfiles</dbfiles>
+  </database>
+  <pfts>
+    <pft>
+      <name>temperate.deciduous</name>
+    </pft>
+  </pfts>
+  <meta.analysis>
+    <iter>3000</iter>
+    <random.effects>
+      <on>FALSE</on>
+      <use_ghs>TRUE</use_ghs>
+    </random.effects>
+  </meta.analysis>
+  <ensemble>
+    <size>5</size>
+    <variable>NPP</variable>
+    <samplingspace>
+      <parameters>
+        <method>uniform</method>
+      </parameters>
+    </samplingspace>
+  </ensemble>
+  <model>
+    <id>5000000002</id>
+    <name>SIPNET</name>
+    <revision>136</revision>
+  </model>
+  <run>
+    <site>
+      <id>1</id>
+      <met.start>2004-01-01 00:00:00</met.start>
+      <met.end>2004-12-31 23:59:59</met.end>
+    </site>
+    <inputs>
+      <met>
+        <id>5000000001</id>
+      </met>
+    </inputs>
+    <start.date>2004-01-01 00:00:00</start.date>
+    <end.date>2004-12-31 23:59:59</end.date>
+  </run>
+  <host>
+    <name>localhost</name>
+  </host>
+</pecan>

@@ -1,0 +1,32 @@
+Loading required package: PEcAn.DB
+Loading required package: PEcAn.settings
+Loading required package: PEcAn.MA
+Loading required package: PEcAn.logger
+Loading required package: PEcAn.utils
+Loading required package: PEcAn.uncertainty
+Loading required package: PEcAn.data.atmosphere
+Loading required package: PEcAn.data.land
+Loading required package: PEcAn.data.remote
+Loading required package: PEcAn.assim.batch
+Loading required package: PEcAn.emulator
+Loading required package: PEcAn.priors
+Loading required package: PEcAn.benchmark
+Loading required package: PEcAn.remote
+Loading required package: PEcAn.workflow
+Usage: %prog [options]
+
+
+Options:
+	-s FILE, --settings=FILE
+		Settings XML file
+
+	-c, --continue
+		Continue processing
+
+	-h, --help
+		Show this help message and exit
+
+
+Error in get_args() : --settings "pecan.xml" not a valid file
+Calls: source -> withVisible -> eval -> eval -> get_args
+Execution halted

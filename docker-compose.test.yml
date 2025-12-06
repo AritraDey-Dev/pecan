@@ -1,0 +1,19 @@
+version: '3'
+services:
+  executor:
+    volumes:
+      - /home/aritra/Downloads/projects/gsoc-codebases/pecan:/pecan
+      - R_library:/usr/local/lib/R/site-library/
+      - /home/aritra/.netrc:/tmp/host_netrc:ro
+
+  rstudio:
+    volumes:
+      - /home/aritra/Downloads/projects/gsoc-codebases/pecan:/pecan
+      - R_library:/usr/local/lib/R/site-library/
+
+  sipnet:
+    volumes:
+      - /home/aritra/Downloads/projects/gsoc-codebases/pecan:/pecan
+
+volumes:
+  R_library:
