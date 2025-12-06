@@ -490,12 +490,7 @@ convert_input <-
   machine.info <- get_machine_info(host, input.args = input.args, input.id = input.id, con = con)
 
   if (any(sapply(machine.info, is.null))) {
-    if (is.null(input.id) || is.na(input.id)) {
-      # This is expected for raw downloads where input.id is not yet established
-    } else {
-      PEcAn.logger::logger.error("failed lookup of inputs or dbfiles")
-      return(NULL)
-    } 
+    PEcAn.logger::logger.error("failed lookup of inputs or dbfiles")
   }
   machine <- machine.info$machine
   input <- machine.info$input
@@ -571,9 +566,6 @@ convert_input <-
   #---------------------------------------------------------------#
   # New arrangement of database adding code to deal with ensembles.
   if (write) {
-     if (is.null(input)) {
-        input <- list()
-      }
       return(
         update_ensemble_writes(result, con, start_date,
                                end_date, overwrite,
