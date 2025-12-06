@@ -571,6 +571,9 @@ convert_input <-
   #---------------------------------------------------------------#
   # New arrangement of database adding code to deal with ensembles.
   if (write) {
+     if (is.null(input)) {
+        input <- list()
+      }
       return(
         update_ensemble_writes(result, con, start_date,
                                end_date, overwrite,
