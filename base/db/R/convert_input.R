@@ -491,6 +491,7 @@ convert_input <-
 
   if (any(sapply(machine.info, is.null))) {
     PEcAn.logger::logger.error("failed lookup of inputs or dbfiles")
+    return(NULL)  
   }
   machine <- machine.info$machine
   input <- machine.info$input
