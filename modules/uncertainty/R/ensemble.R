@@ -149,7 +149,13 @@ get.ensemble.samples <- function( ensemble.size, pft.samples, env.samples,
         } else if (method == "lhc") {
           same.i <- floor(c(PEcAn.emulator::lhc(t(matrix(0:1, ncol = 1, nrow = 2)), ensemble.size) * length(pft.samples[[pft.i]][[1]])))+1
         } else if (method == "uniform") {
-          same.i <- sample.int(length(pft.samples[[pft.i]][[1]]), ensemble.size)
+          PEcAn.logger::logger.info(paste("Sampling for method:", method, "NROW:", length(pft.samples[[pft.i]][[1]])))
+          if (length(pft.samples[[pft.i]][[1]]) > 0) {
+            same.i <- sample.int(length(pft.samples[[pft.i]][[1]]), ensemble.size)
+          } else {
+            PEcAn.logger::logger.warn("Empty pft.samples for uniform method")
+            same.i <- NULL
+          }
         } else if (method == "random") {
             PEcAn.logger::logger.info("Using random row sampling for MCMC draws")
            same.i <- sample(nrow(pft.samples[[pft.i]][[1]]), ensemble.size, replace = TRUE)
