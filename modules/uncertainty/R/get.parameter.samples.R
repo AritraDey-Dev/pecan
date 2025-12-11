@@ -42,9 +42,9 @@ get.parameter.samples <- function(settings,
 
     ### Get output directory info
     if (!is.null(settings$pfts[[i.pft]]$outdir)) {
-      outdirs[i.pft] <- settings$pfts[[i.pft]]$outdir
+      outdirs[[i.pft]] <- settings$pfts[[i.pft]]$outdir
     } else {
-      outdirs[i.pft] <- unique(
+      outdirs[[i.pft]] <- unique(
         PEcAn.DB::dbfile.check(
           type = "Posterior",
           container.id = settings$pfts[[i.pft]]$posteriorid,
@@ -71,19 +71,20 @@ get.parameter.samples <- function(settings,
     ## Load posteriors
     if (!is.na(posterior.files[i])) {
       # Load specified file
-      load(posterior.files[i], envir = distns)
+      base::load(posterior.files[i], envir = distns)
       if (is.null(distns$prior.distns) && !is.null(distns$post.distns)) {
         distns$prior.distns <- distns$post.distns
       }
     } else {
       # Default to most recent posterior in the workflow,
       # or the prior if there is none
-      fname <- file.path(outdirs[i], "post.distns.Rdata")
+      fname <- file.path(outdirs[[i]][1], "post.distns.Rdata")
       if (file.exists(fname)) {
-        load(fname, envir = distns)
+        base::load(fname, envir = distns)
         distns$prior.distns <- distns$post.distns
       } else {
-        load(file.path(outdirs[i], "prior.distns.Rdata"), envir = distns)
+        fname_prior <- file.path(outdirs[[i]][1], "prior.distns.Rdata")
+        base::load(fname_prior, envir = distns)
       }
     }
 
@@ -97,9 +98,9 @@ get.parameter.samples <- function(settings,
       )
       tid <- grep("trait.mcmc.*Rdata", files$file_name)
       if (length(tid) > 0) {
-        trait.mcmc.file <- file.path(files$file_path[tid], files$file_name[tid])
+        trait.mcmc.file <- file.path(files$file_path[tid[1]], files$file_name[tid[1]])
         ma.results <- TRUE
-        load(trait.mcmc.file, envir = distns)
+        base::load(trait.mcmc.file, envir = distns)
 
 
         # PDA samples are fitted together, to preserve correlations downstream
@@ -112,12 +113,13 @@ get.parameter.samples <- function(settings,
         )
         ma.results <- FALSE
       }
-    } else if ("trait.mcmc.Rdata" %in% dir(unlist(outdirs[i]))) {
+    } else if ("trait.mcmc.Rdata" %in% dir(unlist(outdirs[[i]][1]))) {
       PEcAn.logger::logger.info(
         "Defaulting to trait.mcmc file in the pft directory."
       )
       ma.results <- TRUE
-      load(file.path(outdirs[i], "trait.mcmc.Rdata"), envir = distns)
+      fname_mcmc <- file.path(outdirs[[i]][1], "trait.mcmc.Rdata")
+      base::load(fname_mcmc, envir = distns)
     } else {
       ma.results <- FALSE
     }
