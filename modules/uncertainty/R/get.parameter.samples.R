@@ -71,7 +71,7 @@ get.parameter.samples <- function(settings,
     ## Load posteriors
     if (!is.na(posterior.files[i])) {
       # Load specified file
-      base::load(posterior.files[i], envir = distns)
+      load(posterior.files[i], envir = distns)
       if (is.null(distns$prior.distns) && !is.null(distns$post.distns)) {
         distns$prior.distns <- distns$post.distns
       }
@@ -80,11 +80,11 @@ get.parameter.samples <- function(settings,
       # or the prior if there is none
       fname <- file.path(outdirs[[i]][1], "post.distns.Rdata")
       if (file.exists(fname)) {
-        base::load(fname, envir = distns)
+        load(fname, envir = distns)
         distns$prior.distns <- distns$post.distns
       } else {
         fname_prior <- file.path(outdirs[[i]][1], "prior.distns.Rdata")
-        base::load(fname_prior, envir = distns)
+        load(fname_prior, envir = distns)
       }
     }
 
@@ -100,7 +100,7 @@ get.parameter.samples <- function(settings,
       if (length(tid) > 0) {
         trait.mcmc.file <- file.path(files$file_path[tid[1]], files$file_name[tid[1]])
         ma.results <- TRUE
-        base::load(trait.mcmc.file, envir = distns)
+        load(trait.mcmc.file, envir = distns)
 
 
         # PDA samples are fitted together, to preserve correlations downstream
@@ -119,7 +119,7 @@ get.parameter.samples <- function(settings,
       )
       ma.results <- TRUE
       fname_mcmc <- file.path(outdirs[[i]][1], "trait.mcmc.Rdata")
-      base::load(fname_mcmc, envir = distns)
+      load(fname_mcmc, envir = distns)
     } else {
       ma.results <- FALSE
     }
