@@ -15,7 +15,7 @@ assign.treatments <- function(data){
   sites <- unique(data$site_id)
   # Site IDs may be returned as `integer64`, which the `for` loop
   # type-coerces to regular integer, which turns it into gibberish.
-  # Looping over the index instead prevents this type coercion.
+  # Looping over the index instead prevents this type coercion
   for (si in seq_along(sites)) {
     ss <- sites[[si]]
     site.i <- data$site_id == ss
