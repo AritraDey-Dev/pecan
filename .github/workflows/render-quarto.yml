@@ -1,30 +1,27 @@
 name: Render Demo Notebooks
 
 on:
-  push:
-    branches:
-      - main
-      - develop
-    tags:
-      - '*'
+  push: 
   pull_request:
   merge_group:
   workflow_dispatch:
 
 jobs:
-  # Detect which packages changed
-  detect-changes:
+  render-notebook:
     runs-on: ubuntu-latest
-    outputs:
-      changed_packages: ${{ steps.detect.outputs.changed_packages }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Need full history for proper diff
+          fetch-depth: 0  # Need full history to detect changes
 
-      - name: Detect changed packages
-        id: detect
+      - name: Pull PEcAn base image from Docker Hub
+        run: |
+          docker pull pecan/base:latest
+          docker tag pecan/base:latest pecan-base-ci:latest
+
+      - name: Detect and reinstall changed packages
         run: |
           # Determine base commit for comparison
           if [ "${{ github.event_name }}" == "pull_request" ]; then
@@ -32,19 +29,15 @@ jobs:
           elif [ "${{ github.event_name }}" == "push" ]; then
             BASE_SHA="${{ github.event.before }}"
           else
-            # For workflow_dispatch or other events, compare with HEAD~1
             BASE_SHA="HEAD~1"
           fi
           
-          echo "Comparing against: $BASE_SHA"
+          echo "Detecting changes since: $BASE_SHA"
           
-          # Get list of changed files
+          # Get changed files
           CHANGED_FILES=$(git diff --name-only $BASE_SHA HEAD 2>/dev/null || git diff --name-only HEAD~1 HEAD || echo "")
           
-          echo "Changed files:"
-          echo "$CHANGED_FILES"
-          
-          # Determine which packages need reinstallation
+          # Find changed packages
           CHANGED_PKGS=""
           for pkg_dir in base/* modules/*; do
             if [ -d "$pkg_dir" ]; then
@@ -54,133 +47,60 @@ jobs:
             fi
           done
           
-          if [ -z "$CHANGED_PKGS" ]; then
-            echo "changed_packages=none" >> $GITHUB_OUTPUT
-            echo "No package changes detected"
+          # Reinstall changed packages in Docker
+          if [ -n "$CHANGED_PKGS" ]; then
+            echo "Changed packages detected: $CHANGED_PKGS"
+            docker run --rm -v ${{ github.workspace }}:/work -w /work pecan-base-ci:latest bash -c "
+              set -e
+              for pkg in $CHANGED_PKGS; do
+                echo '=== Reinstalling: '\$pkg' ==='
+                cd /work/\$pkg
+                R CMD INSTALL .
+                cd /work
+              done
+            "
           else
-            echo "changed_packages=$CHANGED_PKGS" >> $GITHUB_OUTPUT
-            echo "Changed packages: $CHANGED_PKGS"
+            echo "No package changes detected - using pre-built packages from Docker image"
           fi
-
-  # Run styler check
-  check-style:
-    needs: detect-changes
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Pull and prepare Docker image
-        run: |
-          docker pull pecan/base:latest
-          docker tag pecan/base:latest pecan-base-ci:latest
-
-      - name: Reinstall changed packages
-        if: needs.detect-changes.outputs.changed_packages != 'none'
-        run: |
-          CHANGED_PKGS="${{ needs.detect-changes.outputs.changed_packages }}"
-          docker run --rm -v ${{ github.workspace }}:/work -w /work pecan-base-ci:latest bash -c "
-            set -e
-            for pkg in $CHANGED_PKGS; do
-              echo \"Reinstalling: \$pkg\"
-              cd \$pkg && R CMD INSTALL . && cd /work
-            done
-          "
-
-      - name: Check R code style with styler
-        run: |
-          docker run --rm -v ${{ github.workspace }}:/work pecan-base-ci:latest Rscript -e '
-            library(styler)
-            files_to_check <- c(
-              "/work/documentation/tutorials/Demo_1_Basic_Run/run_pecan.qmd",
-              "/work/documentation/tutorials/Demo_02_Uncertainty_Analysis/uncertainty.qmd"
-            )
-            unstyled <- style_file(files_to_check)
-            if (is.data.frame(unstyled) && "changed" %in% names(unstyled) && any(unstyled$changed == TRUE)) {
-              print(unstyled[unstyled$changed, ])
-              stop("One or more .qmd files are not styled. Please run styler::style_file() locally and commit the changes.")
-            } else {
-              cat("All checked .qmd files are styled.\n")
-            }
-          '
-
-  # Render notebooks in parallel
-  render-notebooks:
-    needs: detect-changes
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        notebook:
-          - name: "Demo_1_Basic_Run"
-            path: "documentation/tutorials/Demo_1_Basic_Run/run_pecan.qmd"
-            dir: "documentation/tutorials/Demo_1_Basic_Run"
-          - name: "Demo_02_Uncertainty_Analysis"
-            path: "documentation/tutorials/Demo_02_Uncertainty_Analysis/uncertainty.qmd"
-            dir: "documentation/tutorials/Demo_02_Uncertainty_Analysis"
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
 
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
         with:
           version: '1.8.17'
 
-      - name: Pull and prepare Docker image
+      - name: Check R code style with styler
         run: |
-          docker pull pecan/base:latest
-          docker tag pecan/base:latest pecan-base-ci:latest
+          docker run --rm -v ${{ github.workspace }}:/work pecan-base-ci:latest Rscript -e '
+            if (!requireNamespace("styler", quietly = TRUE)) install.packages("styler");
+            files_to_check <- c(
+              "/work/documentation/tutorials/Demo_1_Basic_Run/run_pecan.qmd",
+              "/work/documentation/tutorials/Demo_02_Uncertainty_Analysis/uncertainty.qmd"
+            );
+            unstyled <- styler::style_file(files_to_check);
+            if (is.data.frame(unstyled) && "changed" %in% names(unstyled) && any(unstyled$changed == TRUE)) {
+              print(unstyled[unstyled$changed, ]);
+              stop("One or more .qmd files are not styled. Please run styler::style_file() locally and commit the changes.");
+            } else {
+              cat("All checked .qmd files are styled.\n");
+            }
+          '
 
-      - name: Reinstall changed packages
-        if: needs.detect-changes.outputs.changed_packages != 'none'
-        run: |
-          CHANGED_PKGS="${{ needs.detect-changes.outputs.changed_packages }}"
-          docker run --rm -v ${{ github.workspace }}:/work -w /work pecan-base-ci:latest bash -c "
-            set -e
-            for pkg in $CHANGED_PKGS; do
-              echo \"Reinstalling: \$pkg\"
-              cd \$pkg && R CMD INSTALL . && cd /work
-            done
-          "
-
-      - name: Render ${{ matrix.notebook.name }}
+      - name: Render Quarto notebooks to HTML
         run: |
           docker run --rm -v ${{ github.workspace }}:/work pecan-base-ci:latest bash -c "
-            quarto render /work/${{ matrix.notebook.path }} --to html
+            quarto render /work/documentation/tutorials/Demo_1_Basic_Run/run_pecan.qmd --to html &&
+            quarto render /work/documentation/tutorials/Demo_02_Uncertainty_Analysis/uncertainty.qmd --to html
           "
 
-      - name: Upload rendered notebook
-        uses: actions/upload-artifact@v4
-        with:
-          name: notebook-${{ matrix.notebook.name }}
-          path: |
-            ${{ matrix.notebook.dir }}/*.html
-            ${{ matrix.notebook.dir }}/*_files/
-          retention-days: 5
-
-  # Combine and deploy
-  deploy:
-    needs: [check-style, render-notebooks]
-    runs-on: ubuntu-latest
-    if: always() && needs.check-style.result == 'success' && needs.render-notebooks.result == 'success'
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Download all notebook artifacts
-        uses: actions/download-artifact@v4
-        with:
-          pattern: notebook-*
-          path: notebooks/
-          merge-multiple: false
-
-      - name: Combine all rendered notebooks
+      - name: Prepare HTML artifacts
         run: |
-          mkdir -p quarto_html_build
-          find notebooks/ -type f -name "*.html" -exec cp {} quarto_html_build/ \;
-          find notebooks/ -type d -name "*_files" -exec cp -r {} quarto_html_build/ \;
+          mkdir quarto_html_build
+          cp documentation/tutorials/Demo_1_Basic_Run/run_pecan.html quarto_html_build/
+          cp -r documentation/tutorials/Demo_1_Basic_Run/run_pecan_files quarto_html_build/
+          cp documentation/tutorials/Demo_02_Uncertainty_Analysis/uncertainty.html quarto_html_build/
+          cp -r documentation/tutorials/Demo_02_Uncertainty_Analysis/uncertainty_files quarto_html_build/
 
-      - name: Upload combined HTML artifacts
+      - name: Upload rendered HTML as artifacts
         uses: actions/upload-artifact@v4
         with:
           name: quarto-html
