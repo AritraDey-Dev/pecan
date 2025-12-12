@@ -13,7 +13,7 @@
 ##' This function will print a debug message.
 ##'
 ##' @param msg the message that should be printed.
-##' @param ... any additional text that should be printed.
+##' @param ... any additional text that should be.
 ##' @export
 ##' @author Rob Kooper
 ##' @examples
