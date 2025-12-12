@@ -2,31 +2,56 @@ name: Render Demo Notebooks
 
 on:
   push:
-    branches:
-      - main
-      - develop
-    tags:
-      - '*'
   pull_request:
   merge_group:
   workflow_dispatch:
 
 jobs:
-  render-notebook:
+  # Build Docker image once with caching
+  build-docker:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Build PEcAn base Docker image
-        run: |
-          docker build -t pecan-base-ci:latest -f docker/base/Dockerfile .
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-      - name: Set up Quarto
-        uses: quarto-dev/quarto-actions/setup@v2
+      - name: Build PEcAn base Docker image with caching
+        uses: docker/build-push-action@v5
         with:
-          version: '1.8.17'
+          context: .
+          file: docker/base/Dockerfile
+          tags: pecan-base-ci:latest
+          outputs: type=docker,dest=/tmp/pecan-base-ci.tar
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            IMAGE_VERSION=latest
+
+      - name: Upload Docker image as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-image
+          path: /tmp/pecan-base-ci.tar
+          retention-days: 1
+
+  # Run styler check in parallel with rendering
+  check-style:
+    needs: build-docker
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download Docker image
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-image
+          path: /tmp
+
+      - name: Load Docker image
+        run: docker load --input /tmp/pecan-base-ci.tar
 
       - name: Check R code style with styler
         run: |
@@ -45,22 +70,84 @@ jobs:
             }
           '"
 
-      - name: Render Quarto notebooks to HTML
+  # Render notebooks in parallel
+  render-notebooks:
+    needs: build-docker
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        notebook:
+          - name: "Demo_1_Basic_Run"
+            path: "documentation/tutorials/Demo_1_Basic_Run/run_pecan.qmd"
+            html: "run_pecan.html"
+            files: "run_pecan_files"
+          - name: "Demo_02_Uncertainty_Analysis"
+            path: "documentation/tutorials/Demo_02_Uncertainty_Analysis/uncertainty.qmd"
+            html: "uncertainty.html"
+            files: "uncertainty_files"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
+        with:
+          version: '1.8.17'
+
+      - name: Download Docker image
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-image
+          path: /tmp
+
+      - name: Load Docker image
+        run: docker load --input /tmp/pecan-base-ci.tar
+
+      - name: Render ${{ matrix.notebook.name }} to HTML
         run: |
           docker run --rm -v ${{ github.workspace }}:/work pecan-base-ci:latest bash -c "
-            quarto render /work/documentation/tutorials/Demo_1_Basic_Run/run_pecan.qmd --to html &&
-            quarto render /work/documentation/tutorials/Demo_02_Uncertainty_Analysis/uncertainty.qmd --to html
+            quarto render /work/${{ matrix.notebook.path }} --to html
           "
 
-      - name: Prepare HTML artifacts
+      - name: Prepare HTML artifacts for ${{ matrix.notebook.name }}
         run: |
-          mkdir quarto_html_build
-          cp documentation/tutorials/Demo_1_Basic_Run/run_pecan.html quarto_html_build/
-          cp -r documentation/tutorials/Demo_1_Basic_Run/run_pecan_files quarto_html_build/
-          cp documentation/tutorials/Demo_02_Uncertainty_Analysis/uncertainty.html quarto_html_build/
-          cp -r documentation/tutorials/Demo_02_Uncertainty_Analysis/uncertainty_files quarto_html_build/
+          mkdir -p notebook_output
+          cp $(dirname ${{ matrix.notebook.path }})/${{ matrix.notebook.html }} notebook_output/
+          if [ -d "$(dirname ${{ matrix.notebook.path }})/${{ matrix.notebook.files }}" ]; then
+            cp -r $(dirname ${{ matrix.notebook.path }})/${{ matrix.notebook.files }} notebook_output/
+          fi
 
-      - name: Upload rendered HTML as artifacts
+      - name: Upload rendered HTML for ${{ matrix.notebook.name }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: notebook-${{ matrix.notebook.name }}
+          path: notebook_output/
+          retention-days: 5
+
+  # Combine artifacts and deploy
+  deploy:
+    needs: [check-style, render-notebooks]
+    runs-on: ubuntu-latest
+    if: always() && needs.check-style.result == 'success' && needs.render-notebooks.result == 'success'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download all notebook artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: notebook-*
+          path: notebooks/
+          merge-multiple: false
+
+      - name: Combine all rendered notebooks
+        run: |
+          mkdir -p quarto_html_build
+          # Copy all notebook outputs to the build directory
+          find notebooks/ -type f -exec cp {} quarto_html_build/ \;
+          find notebooks/ -type d -name "*_files" -exec cp -r {} quarto_html_build/ \;
+
+      - name: Upload combined HTML artifacts
         uses: actions/upload-artifact@v4
         with:
           name: quarto-html
@@ -83,6 +170,7 @@ jobs:
           repository: ${{ github.repository_owner }}/pecan-documentation
           path: pecan-documentation
           token: ${{ secrets.GH_PAT }}
+          fetch-depth: 1
 
       - name: Deploy HTML to documentation repo
         if: ${{ github.event_name == 'push' && steps.doc_exists.outputs.exists == 'true' }}
