@@ -12,32 +12,37 @@ on:
   workflow_dispatch:
 
 jobs:
-  # Prepare Docker image with only changed packages reinstalled
-  prepare-environment:
+  # Detect which packages changed
+  detect-changes:
     runs-on: ubuntu-latest
+    outputs:
+      changed_packages: ${{ steps.detect.outputs.changed_packages }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 2  # Need previous commit to detect changes
-
-      - name: Pull pre-built PEcAn base image
-        run: |
-          docker pull pecan/base:latest
-          docker tag pecan/base:latest pecan-base-ci:latest
+          fetch-depth: 0  # Need full history for proper diff
 
       - name: Detect changed packages
-        id: detect_changes
+        id: detect
         run: |
-          # Detect which packages have changed
+          # Determine base commit for comparison
           if [ "${{ github.event_name }}" == "pull_request" ]; then
             BASE_SHA="${{ github.event.pull_request.base.sha }}"
-          else
+          elif [ "${{ github.event_name }}" == "push" ]; then
             BASE_SHA="${{ github.event.before }}"
+          else
+            # For workflow_dispatch or other events, compare with HEAD~1
+            BASE_SHA="HEAD~1"
           fi
           
+          echo "Comparing against: $BASE_SHA"
+          
           # Get list of changed files
-          CHANGED_FILES=$(git diff --name-only $BASE_SHA HEAD 2>/dev/null || echo "")
+          CHANGED_FILES=$(git diff --name-only $BASE_SHA HEAD 2>/dev/null || git diff --name-only HEAD~1 HEAD || echo "")
+          
+          echo "Changed files:"
+          echo "$CHANGED_FILES"
           
           # Determine which packages need reinstallation
           CHANGED_PKGS=""
@@ -57,47 +62,30 @@ jobs:
             echo "Changed packages: $CHANGED_PKGS"
           fi
 
-      - name: Reinstall changed packages only
-        if: steps.detect_changes.outputs.changed_packages != 'none'
-        run: |
-          CHANGED_PKGS="${{ steps.detect_changes.outputs.changed_packages }}"
-          
-          docker run --rm -v ${{ github.workspace }}:/work -w /work pecan-base-ci:latest bash -c "
-            set -e
-            for pkg in $CHANGED_PKGS; do
-              echo \"Reinstalling package: \$pkg\"
-              cd \$pkg && R CMD INSTALL . && cd /work
-            done
-          "
-
-      - name: Save Docker image
-        run: |
-          docker save pecan-base-ci:latest | gzip > /tmp/pecan-base-ci.tar.gz
-
-      - name: Upload Docker image
-        uses: actions/upload-artifact@v4
-        with:
-          name: docker-image
-          path: /tmp/pecan-base-ci.tar.gz
-          retention-days: 1
-
   # Run styler check
   check-style:
-    needs: prepare-environment
+    needs: detect-changes
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Download Docker image
-        uses: actions/download-artifact@v4
-        with:
-          name: docker-image
-          path: /tmp
-
-      - name: Load Docker image
+      - name: Pull and prepare Docker image
         run: |
-          gunzip -c /tmp/pecan-base-ci.tar.gz | docker load
+          docker pull pecan/base:latest
+          docker tag pecan/base:latest pecan-base-ci:latest
+
+      - name: Reinstall changed packages
+        if: needs.detect-changes.outputs.changed_packages != 'none'
+        run: |
+          CHANGED_PKGS="${{ needs.detect-changes.outputs.changed_packages }}"
+          docker run --rm -v ${{ github.workspace }}:/work -w /work pecan-base-ci:latest bash -c "
+            set -e
+            for pkg in $CHANGED_PKGS; do
+              echo \"Reinstalling: \$pkg\"
+              cd \$pkg && R CMD INSTALL . && cd /work
+            done
+          "
 
       - name: Check R code style with styler
         run: |
@@ -118,7 +106,7 @@ jobs:
 
   # Render notebooks in parallel
   render-notebooks:
-    needs: prepare-environment
+    needs: detect-changes
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -138,15 +126,22 @@ jobs:
         with:
           version: '1.8.17'
 
-      - name: Download Docker image
-        uses: actions/download-artifact@v4
-        with:
-          name: docker-image
-          path: /tmp
-
-      - name: Load Docker image
+      - name: Pull and prepare Docker image
         run: |
-          gunzip -c /tmp/pecan-base-ci.tar.gz | docker load
+          docker pull pecan/base:latest
+          docker tag pecan/base:latest pecan-base-ci:latest
+
+      - name: Reinstall changed packages
+        if: needs.detect-changes.outputs.changed_packages != 'none'
+        run: |
+          CHANGED_PKGS="${{ needs.detect-changes.outputs.changed_packages }}"
+          docker run --rm -v ${{ github.workspace }}:/work -w /work pecan-base-ci:latest bash -c "
+            set -e
+            for pkg in $CHANGED_PKGS; do
+              echo \"Reinstalling: \$pkg\"
+              cd \$pkg && R CMD INSTALL . && cd /work
+            done
+          "
 
       - name: Render ${{ matrix.notebook.name }}
         run: |
