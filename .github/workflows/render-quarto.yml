@@ -1,7 +1,12 @@
 name: Render Demo Notebooks
 
 on:
-  push: 
+  push:
+    branches:
+      - main
+      - develop
+    tags:
+      - '*'
   pull_request:
   merge_group:
   workflow_dispatch:
@@ -13,55 +18,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # Need full history to detect changes
 
-      - name: Pull PEcAn base image from Docker Hub
+      - name: Build PEcAn base Docker image
         run: |
-          docker pull pecan/base:latest
-          docker tag pecan/base:latest pecan-base-ci:latest
-
-      - name: Detect and reinstall changed packages
-        run: |
-          # Determine base commit for comparison
-          if [ "${{ github.event_name }}" == "pull_request" ]; then
-            BASE_SHA="${{ github.event.pull_request.base.sha }}"
-          elif [ "${{ github.event_name }}" == "push" ]; then
-            BASE_SHA="${{ github.event.before }}"
-          else
-            BASE_SHA="HEAD~1"
-          fi
-          
-          echo "Detecting changes since: $BASE_SHA"
-          
-          # Get changed files
-          CHANGED_FILES=$(git diff --name-only $BASE_SHA HEAD 2>/dev/null || git diff --name-only HEAD~1 HEAD || echo "")
-          
-          # Find changed packages
-          CHANGED_PKGS=""
-          for pkg_dir in base/* modules/*; do
-            if [ -d "$pkg_dir" ]; then
-              if echo "$CHANGED_FILES" | grep -q "^$pkg_dir/"; then
-                CHANGED_PKGS="$CHANGED_PKGS $pkg_dir"
-              fi
-            fi
-          done
-          
-          # Reinstall changed packages in Docker
-          if [ -n "$CHANGED_PKGS" ]; then
-            echo "Changed packages detected: $CHANGED_PKGS"
-            docker run --rm -v ${{ github.workspace }}:/work -w /work pecan-base-ci:latest bash -c "
-              set -e
-              for pkg in $CHANGED_PKGS; do
-                echo '=== Reinstalling: '\$pkg' ==='
-                cd /work/\$pkg
-                R CMD INSTALL .
-                cd /work
-              done
-            "
-          else
-            echo "No package changes detected - using pre-built packages from Docker image"
-          fi
+          docker build -t pecan-base-ci:latest -f docker/base/Dockerfile .
 
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
@@ -70,20 +30,20 @@ jobs:
 
       - name: Check R code style with styler
         run: |
-          docker run --rm -v ${{ github.workspace }}:/work pecan-base-ci:latest Rscript -e '
-            if (!requireNamespace("styler", quietly = TRUE)) install.packages("styler");
+          docker run --rm -v ${{ github.workspace }}:/work pecan-base-ci:latest bash -c "Rscript -e '
+            if (!requireNamespace(\"styler\", quietly = TRUE)) install.packages(\"styler\");
             files_to_check <- c(
-              "/work/documentation/tutorials/Demo_1_Basic_Run/run_pecan.qmd",
-              "/work/documentation/tutorials/Demo_02_Uncertainty_Analysis/uncertainty.qmd"
+              \"/work/documentation/tutorials/Demo_1_Basic_Run/run_pecan.qmd\",
+              \"/work/documentation/tutorials/Demo_02_Uncertainty_Analysis/uncertainty.qmd\"
             );
             unstyled <- styler::style_file(files_to_check);
-            if (is.data.frame(unstyled) && "changed" %in% names(unstyled) && any(unstyled$changed == TRUE)) {
-              print(unstyled[unstyled$changed, ]);
-              stop("One or more .qmd files are not styled. Please run styler::style_file() locally and commit the changes.");
+            if (is.data.frame(unstyled) && \"changed\" %in% names(unstyled) && any(unstyled\$changed == TRUE)) {
+              print(unstyled[unstyled\$changed, ]);
+              stop(\"One or more .qmd files are not styled. Please run styler::style_file() locally and commit the changes.\");
             } else {
-              cat("All checked .qmd files are styled.\n");
+              cat(\"All checked .qmd files are styled.\\n\");
             }
-          '
+          '"
 
       - name: Render Quarto notebooks to HTML
         run: |
@@ -123,7 +83,6 @@ jobs:
           repository: ${{ github.repository_owner }}/pecan-documentation
           path: pecan-documentation
           token: ${{ secrets.GH_PAT }}
-          fetch-depth: 1
 
       - name: Deploy HTML to documentation repo
         if: ${{ github.event_name == 'push' && steps.doc_exists.outputs.exists == 'true' }}
@@ -131,17 +90,21 @@ jobs:
           git config --global user.email "pecanproj@gmail.com"
           git config --global user.name "GitHub Documentation Robot"
           
+          # Determine version/branch
           export VERSION=$(echo $GITHUB_REF | sed 's,.*/,,' )
           if [ "$VERSION" = "main" ]; then
             export VERSION=latest
           fi
           
+          # Create target directory
           TARGET_DIR="pecan-documentation/${VERSION}/rendered-demo-notebooks"
           mkdir -p $TARGET_DIR
           
+          # Copy HTML files and support folders
           rsync -a --delete quarto_html_build/* $TARGET_DIR/
           echo "Autogenerated by https://github.com/PecanProject/pecan/actions/workflows/render-quarto.yml" > "$TARGET_DIR"/README.txt
           
+          # Commit and push
           cd pecan-documentation
           git add --all *
           git commit -m "Update Quarto HTML from pecan revision ${GITHUB_SHA}" || true
