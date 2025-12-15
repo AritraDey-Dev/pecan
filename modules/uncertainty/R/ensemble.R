@@ -149,7 +149,13 @@ get.ensemble.samples <- function( ensemble.size, pft.samples, env.samples,
         } else if (method == "lhc") {
           same.i <- floor(c(PEcAn.emulator::lhc(t(matrix(0:1, ncol = 1, nrow = 2)), ensemble.size) * length(pft.samples[[pft.i]][[1]])))+1
         } else if (method == "uniform") {
-          same.i <- sample.int(length(pft.samples[[pft.i]][[1]]), ensemble.size)
+          n_samples <- length(pft.samples[[pft.i]][[1]])
+          if (n_samples > 0) {
+            same.i <- sample.int(n_samples, ensemble.size)
+          } else {
+            PEcAn.logger::logger.warn("No samples available for PFT", pft.i, "trait 1. Cannot sample.")
+            same.i <- rep(NA, ensemble.size)
+          }
         } else if (method == "random") {
             PEcAn.logger::logger.info("Using random row sampling for MCMC draws")
             n_samples <- NROW(pft.samples[[pft.i]][[1]])
