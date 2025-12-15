@@ -99,7 +99,11 @@ bugs.rdist <- function(prior = data.frame(distn = "norm", parama = 0, paramb = 1
                         start = n.iter / 2)
   Y <- as.matrix(mcmc.object)[, "Y"]
   if (!is.null(n)) {
-    Y <- sample(Y, n)
+    if (length(Y) > 0) {
+      Y <- Y[sample.int(length(Y), n)]
+    } else {
+      PEcAn.logger::logger.warn("bugs.rdist: Y is empty or NULL, cannot sample.")
+    }
   }
   return(Y)
 } # bugs.rdist
