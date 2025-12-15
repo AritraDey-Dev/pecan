@@ -152,7 +152,13 @@ get.ensemble.samples <- function( ensemble.size, pft.samples, env.samples,
           same.i <- sample.int(length(pft.samples[[pft.i]][[1]]), ensemble.size)
         } else if (method == "random") {
             PEcAn.logger::logger.info("Using random row sampling for MCMC draws")
-           same.i <- sample(nrow(pft.samples[[pft.i]][[1]]), ensemble.size, replace = TRUE)
+            n_samples <- NROW(pft.samples[[pft.i]][[1]])
+            if (n_samples > 0) {
+              same.i <- sample(n_samples, ensemble.size, replace = TRUE)
+            } else {
+              PEcAn.logger::logger.warn("No samples available for PFT", pft.i, "trait 1. Cannot sample.")
+              same.i <- rep(NA, ensemble.size)
+            }
         }
         else {
           PEcAn.logger::logger.error("Sampling method %s is not recognized", method)
