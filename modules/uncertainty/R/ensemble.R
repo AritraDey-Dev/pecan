@@ -569,15 +569,25 @@ input.ens.gen <- function(settings, ensemble_size, input, method = "sampling", p
   if (input == "parameters") return(NULL)
 
   #-- assing the sample ids based on different scenarios
+  #-- assing the sample ids based on different scenarios
   input_path <- settings$run$inputs[[tolower(input)]]$path
+  if (length(input_path) == 0) {
+    PEcAn.logger::logger.warn("No input path found for input:", input)
+    return(NULL)
+  }
+
   if (!is.null(parent_ids)) {
     samples$ids <- parent_ids$ids
-    out.of.sample.size <- length(samples$ids[samples$ids > length(input_path)])
-    #sample for those that our outside the param size - forexample, parent id may send id number 200 but we have only100 sample for param
-    samples$ids[samples$ids %in% out.of.sample.size] <- sample(
-      seq_along(input_path),
-      out.of.sample.size,
-      replace = TRUE)
+    # Find indices where the ID is larger than the number of available input paths
+    out.of.bounds.idx <- which(samples$ids > length(input_path))
+    out.of.sample.size <- length(out.of.bounds.idx)
+    
+    if (out.of.sample.size > 0) {
+      samples$ids[out.of.bounds.idx] <- sample(
+        seq_along(input_path),
+        out.of.sample.size,
+        replace = TRUE)
+    }
   } else if (tolower(method) == "sampling") {
     samples$ids <- sample(
       seq_along(input_path),

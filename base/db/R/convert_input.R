@@ -489,7 +489,7 @@ convert_input <-
   # Get machine information
   machine.info <- get_machine_info(host, input.args = input.args, input.id = input.id, con = con)
 
-  if (any(sapply(machine.info, is.null))) {
+  if (is.null(machine.info)) {
     PEcAn.logger::logger.error("failed lookup of inputs or dbfiles")
     return(NULL)  
   }
@@ -507,8 +507,10 @@ convert_input <-
     
     fcn.args <- input.args
     fcn.args$overwrite  <- overwrite
-    fcn.args$in.path    <- dbfile$file_path
-    fcn.args$in.prefix  <- dbfile$file_name
+    if (!is.null(dbfile)) {
+      fcn.args$in.path    <- dbfile$file_path
+      fcn.args$in.prefix  <- dbfile$file_name
+    }
     fcn.args$outfolder  <- outfolder
     fcn.args$start_date <- start_date
     fcn.args$end_date   <- end_date
