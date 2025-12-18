@@ -507,10 +507,8 @@ convert_input <-
     
     fcn.args <- input.args
     fcn.args$overwrite  <- overwrite
-    if (!is.null(dbfile)) {
-      fcn.args$in.path    <- dbfile$file_path
-      fcn.args$in.prefix  <- dbfile$file_name
-    }
+    fcn.args$in.path    <- dbfile$file_path
+    fcn.args$in.prefix  <- dbfile$file_name
     fcn.args$outfolder  <- outfolder
     fcn.args$start_date <- start_date
     fcn.args$end_date   <- end_date
