@@ -112,6 +112,10 @@ convert_input <-
   # Forecast data sets require their own set of database checking operations, making the following else if and else irrelevant
   # for such data.  Forecast data are different if their start date (and if they are part of an ensemble, their ensemble id) are 
   # different.
+  # different.
+  existing.input <- NULL
+  existing.dbfile <- NULL
+  PEcAn.logger::logger.info("DEBUG: Initialized existing.input/dbfile to NULL")
   if (forecast) {
     #if the data is an ensemble, ensemble will be set equal to the number of ensemble members.
     #However, if the data is not an ensemble, ensemble will be equal to FALSE.  In order to treat ensemble and 
@@ -497,6 +501,10 @@ convert_input <-
   input <- machine.info$input
   dbfile <- machine.info$dbfile
   
+  if (is.data.frame(input)) {
+    input <- list(input)
+  }
+  
   #--------------------------------------------------------------------------------------------------#
   # Perform Conversion
  
@@ -574,7 +582,7 @@ convert_input <-
                                machine, mimetype, formatname,
                                allow.conflicting.dates, ensemble,
                                ensemble_name, existing.input,
-                               existing.dbfile, input)
+                               existing.dbfile, input, site.id)
       )
     }
     # if we got here, nothing left to do
