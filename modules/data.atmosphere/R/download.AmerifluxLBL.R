@@ -51,13 +51,22 @@ download.AmerifluxLBL <- function(sitename, outfolder, start_date, end_date,
     dir.create(outfolder, showWarnings = FALSE, recursive = TRUE)
   }
 
-  version <- amerifluxr::amf_var_info()
-  version <- unique(version[version$Site_ID == site,]$BASE_Version)
-  if (length(version) != 1) {
-    PEcAn.logger::logger.error("Could not find AmerifluxLBL version info for site", site)
+  # Check for existing files matching the pattern
+  # We don't know the version without amf_var_info (which uses FTP and is blocked),
+  # so we look for any file matching the site and product.
+  pattern <- paste0("^AMF_", site, "_", data_product, "_.*\\.zip$")
+  existing_files <- list.files(outfolder, pattern = pattern, full.names = TRUE)
+  
+  # If multiple files exist, take the last one (assuming they sort by version/date)
+  if (length(existing_files) > 0) {
+    expected_fullpath <- sort(existing_files, decreasing = TRUE)[1]
+    expected_filename <- basename(expected_fullpath)
+  } else {
+    # If no file exists, we can't know the exact filename until we download it.
+    # We'll set a placeholder that won't match any real file to force download.
+    expected_filename <- ""
+    expected_fullpath <- ""
   }
-  expected_filename <- paste0("AMF_", site, "_", data_product, "_", version, ".zip")
-  expected_fullpath <- file.path(outfolder, expected_filename)
 
   if (!overwrite && file.exists(expected_fullpath)) {
     PEcAn.logger::logger.debug("File '", expected_filename, "' already exists, skipping download")
@@ -99,9 +108,13 @@ download.AmerifluxLBL <- function(sitename, outfolder, start_date, end_date,
   outfname <- basename(zip_file)
 
   if (outfname != expected_filename) {
-    PEcAn.logger::logger.info(
-      "Downloaded a file named", sQuote(outfname),
-      "but download.AmerifluxLBL was expecting", sQuote(expected_filename), ". This may be a PEcAn bug.")
+    if (expected_filename == "") {
+      expected_filename <- outfname
+    } else {
+      PEcAn.logger::logger.info(
+        "Downloaded a file named", sQuote(outfname),
+        "but download.AmerifluxLBL was expecting", sQuote(expected_filename), ". This may be a PEcAn bug.")
+    }
   }
 
   file_timestep_hh <- "HH"
