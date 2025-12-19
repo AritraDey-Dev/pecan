@@ -33,7 +33,7 @@ update_ensemble_writes <- function(
     machine, mimetype, formatname,
     allow.conflicting.dates, ensemble,
     ensemble_name, existing.input,
-    existing.dbfile, input) {
+    existing.dbfile, input, site.id) {
     # Setup newinput. This list will contain two variables: a vector of input IDs and a vector of DB IDs for each entry in result.
     # This list will be returned.
     newinput <- list(input.id = NULL, dbfile.id = NULL) # Blank vectors are null.
@@ -83,9 +83,9 @@ update_ensemble_writes <- function(
         # If there is no ensemble then for each record there should be one parent
         # But when you have ensembles, all of the members have one parent !!
         parent.id <- if (is.numeric(ensemble)) {
-            ifelse(is.null(input[[i]]), NA, input[[1]]$id)
+            if (is.null(input) || is.null(input[[i]])) NA else input[[1]]$id
         } else {
-            ifelse(is.null(input[[i]]), NA, input[[i]]$id)
+            if (is.null(input) || is.null(input[[i]])) NA else input[[i]]$id
         }
 
 

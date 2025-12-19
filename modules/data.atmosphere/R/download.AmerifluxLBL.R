@@ -41,6 +41,10 @@ download.AmerifluxLBL <- function(sitename, outfolder, start_date, end_date,
 
   start_year <- lubridate::year(start_date)
   end_year <- lubridate::year(end_date)
+  
+  if (getOption("timeout") < 600) {
+    options(timeout = 600)
+  }
 
 
   site <- sub(".* \\((.*)\\)", "\\1", sitename)
@@ -72,29 +76,24 @@ download.AmerifluxLBL <- function(sitename, outfolder, start_date, end_date,
     PEcAn.logger::logger.debug("File '", expected_filename, "' already exists, skipping download")
     zip_file <- expected_fullpath
   } else {
-    repeat {
-      tout <- getOption("timeout")
-      zip_file <- try(
-        amerifluxr::amf_download_base(
-          user_id = username,
-          user_email = useremail,
-          site_id = site,
-          data_product = data_product,
-          data_policy = data_policy,
-          agree_policy = TRUE,
-          intended_use = "model",
-          intended_use_text = "PEcAn download",
-          verbose = verbose,
-          out_dir = outfolder)
-      )
-      if (!inherits(zip_file, "try-error")){
-        break
-      }else if(tout > 250 ){
-        PEcAn.logger::logger.severe("Download takes too long, check your connection.")
-        break
-      }
-      PEcAn.logger::logger.info("Added 100 seconds before the download timeouts")
-      options(timeout = tout + 100)
+    options(timeout = 3000)
+    
+    zip_file <- try(
+      amerifluxr::amf_download_base(
+        user_id = username,
+        user_email = useremail,
+        site_id = site,
+        data_product = data_product,
+        data_policy = data_policy,
+        agree_policy = TRUE,
+        intended_use = "model",
+        intended_use_text = "PEcAn download",
+        verbose = TRUE,
+        out_dir = outfolder)
+    )
+    
+    if (inherits(zip_file, "try-error")){
+      PEcAn.logger::logger.severe(paste("Download failed:", attr(zip_file, "condition")))
     }
   }
 
