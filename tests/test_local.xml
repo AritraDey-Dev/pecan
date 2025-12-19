@@ -6,18 +6,18 @@
     <username></username>
     <date>2025/03/24 10:37:56 +0000</date>
   </info>
-  <outdir>/home/aritra/Downloads/projects/gsoc-codebases/pecan/tests/output</outdir>
+  <outdir>/pecan/tests/output</outdir>
   <database>
     <bety>
       <user>bety</user>
       <password>bety</password>
-      <host>localhost</host>
+      <host>postgres</host>
       <port>5432</port>
       <dbname>bety</dbname>
       <driver>PostgreSQL</driver>
       <write>true</write>
     </bety>
-    <dbfiles>/home/aritra/Downloads/projects/gsoc-codebases/pecan/tests/dbfiles</dbfiles>
+    <dbfiles>/pecan/tests/dbfiles</dbfiles>
   </database>
   <pfts>
     <pft>
@@ -45,7 +45,7 @@
   </ensemble>
   <model>
     <id>10</id>
-    <binary>/home/aritra/Downloads/projects/gsoc-codebases/pecan/documentation/tutorials/Demo_02_Uncertainty_Analysis/demo_outdir/sipnet</binary>
+    <binary>/pecan/bin/sipnet</binary>
   </model>
 
   <run>
