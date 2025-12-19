@@ -71,4 +71,4 @@ jobs:
 
     - name: Run SIPNET
       run: |
-        docker compose exec --workdir /pecan/tests executor R CMD ../web/workflow.R --settings docker-ghaction.sipnet.xml
+        docker compose exec --workdir /pecan/tests executor R CMD ../web/workflow.R --settings test.xml
