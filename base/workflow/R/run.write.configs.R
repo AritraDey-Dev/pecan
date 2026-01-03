@@ -175,7 +175,7 @@ run.write.configs <- function(settings, ensemble.size, input_design, write = TRU
 
     # Store output in settings and output variables
     runs.samples$sa <- sa.run.ids <- sa.runs$runs
-    settings$sensitivity.analysis$ensemble.id <- sa.ensemble.id <- sa.runs$ensemble.id
+    settings$sensitivity.analysis$id <- settings$sensitivity.analysis$ensemble.id <- sa.ensemble.id <- sa.runs$ensemble.id
 
     # Save sensitivity analysis info
     fname <- PEcAn.uncertainty::sensitivity.filename(settings, "sensitivity.samples", "Rdata",
@@ -198,7 +198,7 @@ run.write.configs <- function(settings, ensemble.size, input_design, write = TRU
 
     # Store output in settings and output variables
     runs.samples$ensemble <- ens.run.ids <- ens.runs$runs
-    settings$ensemble$ensemble.id <- ens.ensemble.id <- ens.runs$ensemble.id
+    settings$ensemble$id <- settings$ensemble$ensemble.id <- ens.ensemble.id <- ens.runs$ensemble.id
     ens.samples <- ensemble.samples # rename just for consistency
 
     # Save ensemble analysis info
