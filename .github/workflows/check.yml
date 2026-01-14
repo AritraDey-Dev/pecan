@@ -72,5 +72,6 @@ jobs:
         tag=$(\
           curl -s https://api.github.com/repos/pecanproject/pecan/releases/latest \
           | sed -n 's!.*"tag_name": "\(.*\)".*!\1!p')
-        git fetch --tags --depth=1
+        git remote add upstream https://github.com/pecanproject/pecan.git || true
+        git fetch upstream --tags --depth=1
         ./scripts/ensure_version_bump.sh "$tag"
