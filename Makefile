@@ -185,10 +185,9 @@ include Makefile.depends
 
 .install/roxygen2: | .install .install/devtools
 	+ ./scripts/time.sh "roxygen2 ${1}" Rscript -e ${SETROPTIONS} \
-		-e "cran <- 'https://cloud.r-project.org'" \
-		-e "if (!requireNamespace('xfun', quietly = TRUE) || packageVersion('xfun') < '0.40') install.packages('xfun', repos = cran)" \
 		-e "if (!requireNamespace('roxygen2', quietly = TRUE)" \
 		-e "    || packageVersion('roxygen2') != '"${EXPECTED_ROXYGEN_VERSION}"') {" \
+		-e "  cran <- c(getOption('repos'), 'cloud.r-project.org')" \
 		-e "  remotes::install_version('roxygen2', '"${EXPECTED_ROXYGEN_VERSION}"', repos = cran, upgrade = FALSE)" \
 		-e "}"
 	$(eval INSTALLED_ROXYGEN_VERSION := ${EXPECTED_ROXYGEN_VERSION})

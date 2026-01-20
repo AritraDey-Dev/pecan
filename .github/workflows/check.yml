@@ -55,6 +55,8 @@ jobs:
       run: apt-get update && apt-get install -y postgresql-client qpdf
     - name: install new dependencies
       run: Rscript scripts/generate_dependencies.R && cd docker/depends && Rscript pecan.depends.R
+    - name: ensure xfun >= 0.40 for roxygen2
+      run: Rscript -e "if (!requireNamespace('xfun', quietly = TRUE) || packageVersion('xfun') < '0.40') install.packages('xfun')"
 
     # run PEcAn checks
     # The package names of base, modules, and models are passed as matrix variables to avoid repeatability of code
