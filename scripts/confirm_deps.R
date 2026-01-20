@@ -6,6 +6,12 @@
 
 
 
+# Ensure xfun is new enough for roxygen2 (fixes R 4.2 CI issue)
+if (!requireNamespace('xfun', quietly = TRUE) || packageVersion('xfun') < '0.40') {
+  cran <- c(getOption('repos'), 'https://cloud.r-project.org')
+  install.packages('xfun', repos = cran)
+}
+
 #' Check whether a local package's dependencies are already satisfied
 #'
 #' This is a wrapper around `remotes::install_deps` that checks first, before
