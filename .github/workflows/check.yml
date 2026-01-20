@@ -55,8 +55,12 @@ jobs:
       run: apt-get update && apt-get install -y postgresql-client qpdf
     - name: install new dependencies
       run: Rscript scripts/generate_dependencies.R && cd docker/depends && Rscript pecan.depends.R
-    - name: ensure xfun >= 0.40 for roxygen2
-      run: Rscript -e "if (!requireNamespace('xfun', quietly = TRUE) || packageVersion('xfun') < '0.40') install.packages('xfun')"
+    - name: fix xfun/knitr version mismatch
+      run: |
+        Rscript -e "message('Current xfun version: ', packageVersion('xfun'))"
+        Rscript -e "message('Current knitr version: ', packageVersion('knitr'))"
+        Rscript -e "if (packageVersion('xfun') >= '0.52' && packageVersion('knitr') < '1.43') remotes::install_version('xfun', '0.39', repos = 'https://cloud.r-project.org')"
+        Rscript -e "message('Updated xfun version: ', packageVersion('xfun'))"
 
     # run PEcAn checks
     # The package names of base, modules, and models are passed as matrix variables to avoid repeatability of code
